@@ -8,6 +8,7 @@ import io
 import os
 import platform
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -148,7 +149,7 @@ class DataSource:
 
 	@staticmethod
 	def has_dmesg():
-		return len(_program_paths('dmesg')) > 0
+		return shutil.which('dmesg') is not None
 
 	@staticmethod
 	def has_var_run_dmesg_boot():
@@ -157,37 +158,37 @@ class DataSource:
 
 	@staticmethod
 	def has_cpufreq_info():
-		return len(_program_paths('cpufreq-info')) > 0
+		return shutil.which('cpufreq-info') is not None
 
 	@staticmethod
 	def has_sestatus():
-		return len(_program_paths('sestatus')) > 0
+		return shutil.which('sestatus') is not None
 
 	@staticmethod
 	def has_sysctl():
-		return len(_program_paths('sysctl')) > 0
+		return shutil.which('sysctl') is not None
 
 	@staticmethod
 	def has_isainfo():
-		return len(_program_paths('isainfo')) > 0
+		return shutil.which('isainfo') is not None
 
 	@staticmethod
 	def has_kstat():
-		return len(_program_paths('kstat')) > 0
+		return shutil.which('kstat') is not None
 
 	@staticmethod
 	def has_sysinfo():
 		uname = platform.system().strip().strip('"').strip("'").strip().lower()
 		is_beos = 'beos' in uname or 'haiku' in uname
-		return is_beos and len(_program_paths('sysinfo')) > 0
+		return is_beos and shutil.which('sysinfo') is not None
 
 	@staticmethod
 	def has_lscpu():
-		return len(_program_paths('lscpu')) > 0
+		return shutil.which('lscpu') is not None
 
 	@staticmethod
 	def has_ibm_pa_features():
-		return len(_program_paths('lsprop')) > 0
+		return shutil.which('lsprop') is not None
 
 	@staticmethod
 	def has_wmic():
@@ -272,19 +273,6 @@ class DataSource:
 		feature_bits = _read_windows_registry_key(r"Hardware\Description\System\CentralProcessor\0", "FeatureSet")
 		return feature_bits
 
-
-def _program_paths(program_name):
-	paths = []
-	exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-	for p in os.environ['PATH'].split(os.pathsep):
-		p = os.path.join(p, program_name)
-		if os.access(p, os.X_OK):
-			paths.append(p)
-		for e in exts:
-			pext = p + e
-			if os.access(pext, os.X_OK):
-				paths.append(pext)
-	return paths
 
 def _run_and_get_stdout(command):
 	g_trace.command_header(f'Running command {command}')
