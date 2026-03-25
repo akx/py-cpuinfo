@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -341,85 +341,87 @@ NUMA node0 CPU(s):     0,1
 		return returncode, output
 
 
-class TestLinuxFedora_24_ppc64le(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 5
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 1
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 15
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 5
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 1
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 15
 
-		assert info['l1_instruction_cache_size'] == (32 * 1024)
-		assert info['l1_data_cache_size'] == (64 * 1024)
 
-		assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-	def test_get_cpu_info_from_ibm_pa_features(self):
-		info = cpuinfo._get_cpu_info_from_ibm_pa_features()
-		assert info['flags'] == [
-			'dss_2.02',
-			'dss_2.05',
-			'dss_2.06',
-			'fpu',
-			'lsd_in_dscr',
-			'ppr',
-			'slb',
-			'sso_2.06',
-			'ugr_in_dscr',
-		]
+	assert info['l1_instruction_cache_size'] == (32 * 1024)
+	assert info['l1_data_cache_size'] == (64 * 1024)
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+	assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
 
-		assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
-		assert info['hz_advertised_friendly'] == '3.4250 GHz'
-		assert info['hz_actual_friendly'] == '3.4250 GHz'
-		assert info['hz_advertised'] == (3425000000, 0)
-		assert info['hz_actual'] == (3425000000, 0)
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+def test_get_cpu_info_from_ibm_pa_features():
+	info = cpuinfo._get_cpu_info_from_ibm_pa_features()
+	assert info['flags'] == [
+		'dss_2.02',
+		'dss_2.05',
+		'dss_2.06',
+		'fpu',
+		'lsd_in_dscr',
+		'ppr',
+		'slb',
+		'sso_2.06',
+		'ugr_in_dscr',
+	]
 
-		assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
-		assert info['hz_advertised_friendly'] == '3.4250 GHz'
-		assert info['hz_actual_friendly'] == '3.4250 GHz'
-		assert info['hz_advertised'] == (3425000000, 0)
-		assert info['hz_actual'] == (3425000000, 0)
-		assert info['arch'] == 'PPC_64'
-		assert info['bits'] == 64
-		assert info['count'] == 2
-		assert info['l1_instruction_cache_size'] == (32 * 1024)
-		assert info['l1_data_cache_size'] == (64 * 1024)
-		assert info['arch_string_raw'] == 'ppc64le'
-		assert info['flags'] == [
-			'dss_2.02',
-			'dss_2.05',
-			'dss_2.06',
-			'fpu',
-			'lsd_in_dscr',
-			'ppr',
-			'slb',
-			'sso_2.06',
-			'ugr_in_dscr',
-		]
+
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+
+	assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
+	assert info['hz_advertised_friendly'] == '3.4250 GHz'
+	assert info['hz_actual_friendly'] == '3.4250 GHz'
+	assert info['hz_advertised'] == (3425000000, 0)
+	assert info['hz_actual'] == (3425000000, 0)
+
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['brand_raw'] == 'POWER8E (raw), altivec supported'
+	assert info['hz_advertised_friendly'] == '3.4250 GHz'
+	assert info['hz_actual_friendly'] == '3.4250 GHz'
+	assert info['hz_advertised'] == (3425000000, 0)
+	assert info['hz_actual'] == (3425000000, 0)
+	assert info['arch'] == 'PPC_64'
+	assert info['bits'] == 64
+	assert info['count'] == 2
+	assert info['l1_instruction_cache_size'] == (32 * 1024)
+	assert info['l1_data_cache_size'] == (64 * 1024)
+	assert info['arch_string_raw'] == 'ppc64le'
+	assert info['flags'] == [
+		'dss_2.02',
+		'dss_2.05',
+		'dss_2.06',
+		'fpu',
+		'lsd_in_dscr',
+		'ppr',
+		'slb',
+		'sso_2.06',
+		'ugr_in_dscr',
+	]

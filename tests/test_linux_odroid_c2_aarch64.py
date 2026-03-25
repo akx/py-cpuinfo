@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -150,67 +150,69 @@ analyzing CPU 3:
 		return returncode, output
 
 
-class TestLinux_Odroid_C2_Aarch_64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 4
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 4
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 2
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 13
 
-	def test_get_cpu_info_from_cpufreq_info(self):
-		info = cpuinfo._get_cpu_info_from_cpufreq_info()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 4
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 4
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 2
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 13
 
-		assert info['hz_advertised_friendly'] == '1.5400 GHz'
-		assert info['hz_actual_friendly'] == '1.5400 GHz'
-		assert info['hz_advertised'] == (1540000000, 0)
-		assert info['hz_actual'] == (1540000000, 0)
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_get_cpu_info_from_cpufreq_info():
+	info = cpuinfo._get_cpu_info_from_cpufreq_info()
 
-		assert info['hz_advertised_friendly'] == '1.5360 GHz'
-		assert info['hz_actual_friendly'] == '1.5360 GHz'
-		assert info['hz_advertised'] == (1536000000, 0)
-		assert info['hz_actual'] == (1536000000, 0)
+	assert info['hz_advertised_friendly'] == '1.5400 GHz'
+	assert info['hz_actual_friendly'] == '1.5400 GHz'
+	assert info['hz_advertised'] == (1540000000, 0)
+	assert info['hz_actual'] == (1540000000, 0)
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-		assert info['hardware_raw'] == 'ODROID-C2'
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert info['flags'] == ['asimd', 'crc32', 'fp']
+	assert info['hz_advertised_friendly'] == '1.5360 GHz'
+	assert info['hz_actual_friendly'] == '1.5360 GHz'
+	assert info['hz_advertised'] == (1536000000, 0)
+	assert info['hz_actual'] == (1536000000, 0)
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
 
-		assert info['hardware_raw'] == 'ODROID-C2'
-		assert info['hz_advertised_friendly'] == '1.5400 GHz'
-		assert info['hz_actual_friendly'] == '1.5400 GHz'
-		assert info['hz_advertised'] == (1540000000, 0)
-		assert info['hz_actual'] == (1540000000, 0)
-		assert info['arch'] == 'ARM_8'
-		assert info['bits'] == 64
-		assert info['count'] == 4
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-		assert info['arch_string_raw'] == 'aarch64'
+	assert info['hardware_raw'] == 'ODROID-C2'
 
-		assert info['flags'] == ['asimd', 'crc32', 'fp']
+	assert info['flags'] == ['asimd', 'crc32', 'fp']
+
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['hardware_raw'] == 'ODROID-C2'
+	assert info['hz_advertised_friendly'] == '1.5400 GHz'
+	assert info['hz_actual_friendly'] == '1.5400 GHz'
+	assert info['hz_advertised'] == (1540000000, 0)
+	assert info['hz_actual'] == (1540000000, 0)
+	assert info['arch'] == 'ARM_8'
+	assert info['bits'] == 64
+	assert info['count'] == 4
+
+	assert info['arch_string_raw'] == 'aarch64'
+
+	assert info['flags'] == ['asimd', 'crc32', 'fp']

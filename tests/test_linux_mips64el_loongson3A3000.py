@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -123,57 +123,58 @@ NUMA node0 CPU(s):     0-3
 		return returncode, output
 
 
-class TestLinux_mips64el_Loongson3A3000(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 5
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 6
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 17
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 5
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 6
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 17
 
-		assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
-		assert info['l1_data_cache_size'] == 65536
-		assert info['l1_instruction_cache_size'] == 65536
-		assert info['l2_cache_size'] == 262144
-		assert info['l3_cache_size'] == 2097152
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
-		assert info['hz_advertised_friendly'] == '1.4490 GHz'
-		assert info['hz_actual_friendly'] == '1.4490 GHz'
-		assert info['hz_advertised'] == (1449000000, 0)
-		assert info['hz_actual'] == (1449000000, 0)
-		assert info['flags'] == ['vz']
+	assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
+	assert info['l1_data_cache_size'] == 65536
+	assert info['l1_instruction_cache_size'] == 65536
+	assert info['l2_cache_size'] == 262144
+	assert info['l3_cache_size'] == 2097152
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
 
-		assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
-		assert info['arch'] == 'MIPS_64'
-		assert info['bits'] == 64
-		assert info['count'] == 4
-		assert info['arch_string_raw'] == 'mips64'
-		assert info['flags'] == ['vz']
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+
+	assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
+	assert info['hz_advertised_friendly'] == '1.4490 GHz'
+	assert info['hz_actual_friendly'] == '1.4490 GHz'
+	assert info['hz_advertised'] == (1449000000, 0)
+	assert info['hz_actual'] == (1449000000, 0)
+	assert info['flags'] == ['vz']
+
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['brand_raw'] == 'ICT Loongson-3A R3 (Loongson-3A3000) @ 1449MHz'
+	assert info['arch'] == 'MIPS_64'
+	assert info['bits'] == 64
+	assert info['count'] == 4
+	assert info['arch_string_raw'] == 'mips64'
+	assert info['flags'] == ['vz']

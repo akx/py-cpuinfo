@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -88,52 +88,53 @@ L2 cache:            2 MiB
 		return returncode, output
 
 
-class TestLinuxUbuntu_21_04_riscv64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 1
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 11
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
-		assert info['l1_instruction_cache_size'] == (32 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
-		assert info['l2_cache_size'] == ((2 * 1024) * 1024)
-		assert len(info) == 3
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 1
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 11
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
-		assert info['brand_raw'] == 'sifive,u74-mc'
-		assert len(info) == 1
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
+	assert info['l1_instruction_cache_size'] == (32 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
+	assert info['l2_cache_size'] == ((2 * 1024) * 1024)
+	assert len(info) == 3
 
-		assert info['brand_raw'] == 'sifive,u74-mc'
-		assert info['arch'] == 'RISCV_64'
-		assert info['bits'] == 64
-		assert info['count'] == 4
-		assert info['l1_instruction_cache_size'] == (32 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
-		assert info['l2_cache_size'] == ((2 * 1024) * 1024)
-		assert info['arch_string_raw'] == 'riscv64'
+
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+	assert info['brand_raw'] == 'sifive,u74-mc'
+	assert len(info) == 1
+
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['brand_raw'] == 'sifive,u74-mc'
+	assert info['arch'] == 'RISCV_64'
+	assert info['bits'] == 64
+	assert info['count'] == 4
+	assert info['l1_instruction_cache_size'] == (32 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
+	assert info['l2_cache_size'] == ((2 * 1024) * 1024)
+	assert info['arch_string_raw'] == 'riscv64'

@@ -1,7 +1,7 @@
 # OS X 10.9 Mavericks
 # Darwin version 13
 
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -64,139 +64,139 @@ hw.cpufrequency: 2890000000
 		return returncode, output
 
 
-class TestOSX_10_9(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 11
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 18
 
-	def test_get_cpu_info_from_sysctl(self):
-		info = cpuinfo._get_cpu_info_from_sysctl()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 11
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 18
 
-		assert info['vendor_id_raw'] == 'GenuineIntel'
-		assert info['brand_raw'] == 'Intel(R) Core(TM) i5-4440 CPU @ 3.10GHz'
-		assert info['hz_advertised_friendly'] == '3.1000 GHz'
-		assert info['hz_actual_friendly'] == '2.8900 GHz'
-		assert info['hz_advertised'] == (3100000000, 0)
-		assert info['hz_actual'] == (2890000000, 0)
 
-		assert info['l2_cache_size'] == (256 * 1024)
+def test_get_cpu_info_from_sysctl():
+	info = cpuinfo._get_cpu_info_from_sysctl()
 
-		assert info['stepping'] == 9
-		assert info['model'] == 58
-		assert info['family'] == 6
+	assert info['vendor_id_raw'] == 'GenuineIntel'
+	assert info['brand_raw'] == 'Intel(R) Core(TM) i5-4440 CPU @ 3.10GHz'
+	assert info['hz_advertised_friendly'] == '3.1000 GHz'
+	assert info['hz_actual_friendly'] == '2.8900 GHz'
+	assert info['hz_advertised'] == (3100000000, 0)
+	assert info['hz_actual'] == (2890000000, 0)
 
-		assert info['flags'] == [
-			'apic',
-			'avx2',
-			'bmi2',
-			'clfsh',
-			'cmov',
-			'cx8',
-			'de',
-			'em64t',
-			'enfstrg',
-			'fpu',
-			'fxsr',
-			'htt',
-			'lahf',
-			'mca',
-			'mce',
-			'mmx',
-			'msr',
-			'mtrr',
-			'pae',
-			'pat',
-			'pge',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'vme',
-			'vmm',
-			'xd',
-		]
+	assert info['l2_cache_size'] == (256 * 1024)
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+	assert info['stepping'] == 9
+	assert info['model'] == 58
+	assert info['family'] == 6
 
-		assert info['vendor_id_raw'] == 'GenuineIntel'
-		assert info['brand_raw'] == 'Intel(R) Core(TM) i5-4440 CPU @ 3.10GHz'
-		assert info['hz_advertised_friendly'] == '3.1000 GHz'
-		assert info['hz_actual_friendly'] == '2.8900 GHz'
-		assert info['hz_advertised'] == (3100000000, 0)
-		assert info['hz_actual'] == (2890000000, 0)
-		assert info['arch'] == 'X86_64'
-		assert info['bits'] == 64
-		assert info['count'] == 4
+	assert info['flags'] == [
+		'apic',
+		'avx2',
+		'bmi2',
+		'clfsh',
+		'cmov',
+		'cx8',
+		'de',
+		'em64t',
+		'enfstrg',
+		'fpu',
+		'fxsr',
+		'htt',
+		'lahf',
+		'mca',
+		'mce',
+		'mmx',
+		'msr',
+		'mtrr',
+		'pae',
+		'pat',
+		'pge',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'vme',
+		'vmm',
+		'xd',
+	]
 
-		assert info['arch_string_raw'] == 'x86_64'
 
-		assert info['l2_cache_size'] == (256 * 1024)
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
 
-		assert info['stepping'] == 9
-		assert info['model'] == 58
-		assert info['family'] == 6
+	assert info['vendor_id_raw'] == 'GenuineIntel'
+	assert info['brand_raw'] == 'Intel(R) Core(TM) i5-4440 CPU @ 3.10GHz'
+	assert info['hz_advertised_friendly'] == '3.1000 GHz'
+	assert info['hz_actual_friendly'] == '2.8900 GHz'
+	assert info['hz_advertised'] == (3100000000, 0)
+	assert info['hz_actual'] == (2890000000, 0)
+	assert info['arch'] == 'X86_64'
+	assert info['bits'] == 64
+	assert info['count'] == 4
 
-		assert info['flags'] == [
-			'apic',
-			'avx2',
-			'bmi2',
-			'clfsh',
-			'cmov',
-			'cx8',
-			'de',
-			'em64t',
-			'enfstrg',
-			'fpu',
-			'fxsr',
-			'htt',
-			'lahf',
-			'mca',
-			'mce',
-			'mmx',
-			'msr',
-			'mtrr',
-			'pae',
-			'pat',
-			'pge',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'vme',
-			'vmm',
-			'xd',
-		]
+	assert info['arch_string_raw'] == 'x86_64'
+
+	assert info['l2_cache_size'] == (256 * 1024)
+
+	assert info['stepping'] == 9
+	assert info['model'] == 58
+	assert info['family'] == 6
+
+	assert info['flags'] == [
+		'apic',
+		'avx2',
+		'bmi2',
+		'clfsh',
+		'cmov',
+		'cx8',
+		'de',
+		'em64t',
+		'enfstrg',
+		'fpu',
+		'fxsr',
+		'htt',
+		'lahf',
+		'mca',
+		'mce',
+		'mmx',
+		'msr',
+		'mtrr',
+		'pae',
+		'pat',
+		'pge',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'vme',
+		'vmm',
+		'xd',
+	]

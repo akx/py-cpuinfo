@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -437,293 +437,294 @@ zoneminder_run_sudo off
 		return returncode, output
 
 
-class Test_Linux_Fedora_29_X86_64_Ryzen_7(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 14
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 11
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 21
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 14
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 11
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 21
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '3.6931 GHz'
-		assert info['hz_actual_friendly'] == '3.6931 GHz'
-		assert info['hz_advertised'] == (3693060000, 0)
-		assert info['hz_actual'] == (3693060000, 0)
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert info['l1_instruction_cache_size'] == (64 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
-		assert info['l2_cache_size'] == (512 * 1024)
-		assert info['l3_cache_size'] == (16384 * 1024)
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '3.6931 GHz'
+	assert info['hz_actual_friendly'] == '3.6931 GHz'
+	assert info['hz_advertised'] == (3693060000, 0)
+	assert info['hz_actual'] == (3693060000, 0)
 
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'aes',
-			'apic',
-			'arat',
-			'avx',
-			'avx2',
-			'clflush',
-			'clflushopt',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'extd_apicid',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hypervisor',
-			'lahf_lm',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'movbe',
-			'msr',
-			'mtrr',
-			'nonstop_tsc',
-			'nopl',
-			'nx',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'tsc_known_freq',
-			'vme',
-			'vmmcall',
-			'x2apic',
-			'xsave',
-		]
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+	assert info['l1_instruction_cache_size'] == (64 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
+	assert info['l2_cache_size'] == (512 * 1024)
+	assert info['l3_cache_size'] == (16384 * 1024)
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '3.6931 GHz'
-		assert info['hz_actual_friendly'] == '3.6931 GHz'
-		assert info['hz_advertised'] == (3693060000, 0)
-		assert info['hz_actual'] == (3693060000, 0)
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'aes',
+		'apic',
+		'arat',
+		'avx',
+		'avx2',
+		'clflush',
+		'clflushopt',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'extd_apicid',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hypervisor',
+		'lahf_lm',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'movbe',
+		'msr',
+		'mtrr',
+		'nonstop_tsc',
+		'nopl',
+		'nx',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'tsc_known_freq',
+		'vme',
+		'vmmcall',
+		'x2apic',
+		'xsave',
+	]
 
-		# FIXME: This is l2 cache size not l3 cache size
-		assert info['l3_cache_size'] == (512 * 1024)
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'aes',
-			'apic',
-			'arat',
-			'avx',
-			'avx2',
-			'clflush',
-			'clflushopt',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'extd_apicid',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hypervisor',
-			'lahf_lm',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'movbe',
-			'msr',
-			'mtrr',
-			'nonstop_tsc',
-			'nopl',
-			'nx',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'tsc_known_freq',
-			'vme',
-			'vmmcall',
-			'x2apic',
-			'xsave',
-		]
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '3.6931 GHz'
+	assert info['hz_actual_friendly'] == '3.6931 GHz'
+	assert info['hz_advertised'] == (3693060000, 0)
+	assert info['hz_actual'] == (3693060000, 0)
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '3.6931 GHz'
-		assert info['hz_actual_friendly'] == '3.6931 GHz'
-		assert info['hz_advertised'] == (3693060000, 0)
-		assert info['hz_actual'] == (3693060000, 0)
-		assert info['arch'] == 'X86_64'
-		assert info['bits'] == 64
-		assert info['count'] == 8
+	# FIXME: This is l2 cache size not l3 cache size
+	assert info['l3_cache_size'] == (512 * 1024)
 
-		assert info['arch_string_raw'] == 'x86_64'
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'aes',
+		'apic',
+		'arat',
+		'avx',
+		'avx2',
+		'clflush',
+		'clflushopt',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'extd_apicid',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hypervisor',
+		'lahf_lm',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'movbe',
+		'msr',
+		'mtrr',
+		'nonstop_tsc',
+		'nopl',
+		'nx',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'tsc_known_freq',
+		'vme',
+		'vmmcall',
+		'x2apic',
+		'xsave',
+	]
 
-		assert info['l1_instruction_cache_size'] == (64 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
 
-		assert info['l2_cache_size'] == (512 * 1024)
-		# FIXME: This is l2 cache size not l3 cache size
-		# it is wrong in /proc/cpuinfo
-		assert info['l3_cache_size'] == (512 * 1024)
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'aes',
-			'apic',
-			'arat',
-			'avx',
-			'avx2',
-			'clflush',
-			'clflushopt',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'extd_apicid',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hypervisor',
-			'lahf_lm',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'movbe',
-			'msr',
-			'mtrr',
-			'nonstop_tsc',
-			'nopl',
-			'nx',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'tsc_known_freq',
-			'vme',
-			'vmmcall',
-			'x2apic',
-			'xsave',
-		]
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '3.6931 GHz'
+	assert info['hz_actual_friendly'] == '3.6931 GHz'
+	assert info['hz_advertised'] == (3693060000, 0)
+	assert info['hz_actual'] == (3693060000, 0)
+	assert info['arch'] == 'X86_64'
+	assert info['bits'] == 64
+	assert info['count'] == 8
+
+	assert info['arch_string_raw'] == 'x86_64'
+
+	assert info['l1_instruction_cache_size'] == (64 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
+
+	assert info['l2_cache_size'] == (512 * 1024)
+	# FIXME: This is l2 cache size not l3 cache size
+	# it is wrong in /proc/cpuinfo
+	assert info['l3_cache_size'] == (512 * 1024)
+
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'aes',
+		'apic',
+		'arat',
+		'avx',
+		'avx2',
+		'clflush',
+		'clflushopt',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'extd_apicid',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hypervisor',
+		'lahf_lm',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'movbe',
+		'msr',
+		'mtrr',
+		'nonstop_tsc',
+		'nopl',
+		'nx',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'tsc_known_freq',
+		'vme',
+		'vmmcall',
+		'x2apic',
+		'xsave',
+	]

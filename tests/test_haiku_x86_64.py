@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -49,125 +49,125 @@ CPU #0: "Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz"
 		return returncode, output
 
 
-class TestHaiku_x86_64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 9
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 16
 
-	def test_get_cpu_info_from_sysinfo(self):
-		info = cpuinfo._get_cpu_info_from_sysinfo()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 9
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 16
 
-		assert info['brand_raw'] == 'Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz'
-		assert info['hz_advertised_friendly'] == '2.9330 GHz'
-		assert info['hz_actual_friendly'] == '2.9330 GHz'
-		assert info['hz_advertised'] == (2933000000, 0)
-		assert info['hz_actual'] == (2933000000, 0)
 
-		assert info['stepping'] == 5
-		assert info['model'] == 30
-		assert info['family'] == 6
-		assert info['flags'] == [
-			'64',
-			'apic',
-			'cflush',
-			'cmov',
-			'cx8',
-			'de',
-			'fpu',
-			'fxstr',
-			'mca',
-			'mce',
-			'mmx',
-			'monitor',
-			'msr',
-			'mtrr',
-			'nx',
-			'pae',
-			'pat',
-			'pge',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sce',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'sse4.1',
-			'sse4.2',
-			'ssse3',
-			'tsc',
-			'vme',
-		]
+def test_get_cpu_info_from_sysinfo():
+	info = cpuinfo._get_cpu_info_from_sysinfo()
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+	assert info['brand_raw'] == 'Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz'
+	assert info['hz_advertised_friendly'] == '2.9330 GHz'
+	assert info['hz_actual_friendly'] == '2.9330 GHz'
+	assert info['hz_advertised'] == (2933000000, 0)
+	assert info['hz_actual'] == (2933000000, 0)
 
-		assert info['brand_raw'] == 'Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz'
-		assert info['hz_advertised_friendly'] == '2.9330 GHz'
-		assert info['hz_actual_friendly'] == '2.9330 GHz'
-		assert info['hz_advertised'] == (2933000000, 0)
-		assert info['hz_actual'] == (2933000000, 0)
-		assert info['arch'] == 'X86_32'
-		assert info['bits'] == 32
-		assert info['count'] == 4
+	assert info['stepping'] == 5
+	assert info['model'] == 30
+	assert info['family'] == 6
+	assert info['flags'] == [
+		'64',
+		'apic',
+		'cflush',
+		'cmov',
+		'cx8',
+		'de',
+		'fpu',
+		'fxstr',
+		'mca',
+		'mce',
+		'mmx',
+		'monitor',
+		'msr',
+		'mtrr',
+		'nx',
+		'pae',
+		'pat',
+		'pge',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sce',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'sse4.1',
+		'sse4.2',
+		'ssse3',
+		'tsc',
+		'vme',
+	]
 
-		assert info['arch_string_raw'] == 'BePC'
 
-		assert info['stepping'] == 5
-		assert info['model'] == 30
-		assert info['family'] == 6
-		assert info['flags'] == [
-			'64',
-			'apic',
-			'cflush',
-			'cmov',
-			'cx8',
-			'de',
-			'fpu',
-			'fxstr',
-			'mca',
-			'mce',
-			'mmx',
-			'monitor',
-			'msr',
-			'mtrr',
-			'nx',
-			'pae',
-			'pat',
-			'pge',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sce',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'sse4.1',
-			'sse4.2',
-			'ssse3',
-			'tsc',
-			'vme',
-		]
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['brand_raw'] == 'Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz'
+	assert info['hz_advertised_friendly'] == '2.9330 GHz'
+	assert info['hz_actual_friendly'] == '2.9330 GHz'
+	assert info['hz_advertised'] == (2933000000, 0)
+	assert info['hz_actual'] == (2933000000, 0)
+	assert info['arch'] == 'X86_32'
+	assert info['bits'] == 32
+	assert info['count'] == 4
+
+	assert info['arch_string_raw'] == 'BePC'
+
+	assert info['stepping'] == 5
+	assert info['model'] == 30
+	assert info['family'] == 6
+	assert info['flags'] == [
+		'64',
+		'apic',
+		'cflush',
+		'cmov',
+		'cx8',
+		'de',
+		'fpu',
+		'fxstr',
+		'mca',
+		'mce',
+		'mmx',
+		'monitor',
+		'msr',
+		'mtrr',
+		'nx',
+		'pae',
+		'pat',
+		'pge',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sce',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'sse4.1',
+		'sse4.2',
+		'ssse3',
+		'tsc',
+		'vme',
+	]

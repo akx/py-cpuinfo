@@ -1,5 +1,3 @@
-import unittest
-
 from cpuinfo import cpuinfo
 from cpuinfo.cpuinfo import Trace
 from tests import helpers
@@ -81,26 +79,24 @@ allow_execmem                   off
 		return returncode, output
 
 
-class TestSELinux(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		self.trace = Trace(False, False)
+trace = Trace(False, False)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	def test_enforcing(self):
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource_enforcing)
-		assert cpuinfo._is_selinux_enforcing(self.trace) is True
+def test_enforcing(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource_enforcing, monkeypatch)
+	assert cpuinfo._is_selinux_enforcing(trace) is True
 
-	def test_not_enforcing(self):
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource_not_enforcing)
-		assert cpuinfo._is_selinux_enforcing(self.trace) is False
 
-	def test_exec_mem_and_heap(self):
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource_exec_mem_and_heap)
-		assert cpuinfo._is_selinux_enforcing(self.trace) is False
+def test_not_enforcing(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource_not_enforcing, monkeypatch)
+	assert cpuinfo._is_selinux_enforcing(trace) is False
 
-	def test_no_exec_mem_and_heap(self):
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource_no_exec_mem_and_heap)
-		assert cpuinfo._is_selinux_enforcing(self.trace) is True
+
+def test_exec_mem_and_heap(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource_exec_mem_and_heap, monkeypatch)
+	assert cpuinfo._is_selinux_enforcing(trace) is False
+
+
+def test_no_exec_mem_and_heap(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource_no_exec_mem_and_heap, monkeypatch)
+	assert cpuinfo._is_selinux_enforcing(trace) is True

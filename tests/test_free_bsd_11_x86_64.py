@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -57,189 +57,190 @@ CPU: Intel(R) Pentium(R) CPU G640 @ 2.80GHz (2793.73-MHz K8-class CPU)
 		return retcode, output
 
 
-class TestFreeBSD_11_X86_64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 10
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 10
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 17
 
-	def test_get_cpu_info_from_dmesg(self):
-		info = cpuinfo._get_cpu_info_from_dmesg()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 0
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 10
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 10
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 17
 
-		assert info['vendor_id_raw'] == 'GenuineIntel'
-		assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
-		assert info['hz_advertised_friendly'] == '2.8000 GHz'
-		assert info['hz_actual_friendly'] == '2.8000 GHz'
-		assert info['hz_advertised'] == (2800000000, 0)
-		assert info['hz_actual'] == (2800000000, 0)
 
-		assert info['stepping'] == 7
-		assert info['model'] == 42
-		assert info['family'] == 6
-		assert info['flags'] == [
-			'apic',
-			'cmov',
-			'cx16',
-			'cx8',
-			'de',
-			'fpu',
-			'fxsr',
-			'htt',
-			'lahf',
-			'lm',
-			'mca',
-			'mce',
-			'mmx',
-			'msr',
-			'mtrr',
-			'nx',
-			'osxsave',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'sse4.1',
-			'sse4.2',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'vme',
-			'xsave',
-		]
+def test_get_cpu_info_from_dmesg():
+	info = cpuinfo._get_cpu_info_from_dmesg()
 
-	def test_get_cpu_info_from_cat_var_run_dmesg_boot(self):
-		info = cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()
+	assert info['vendor_id_raw'] == 'GenuineIntel'
+	assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
+	assert info['hz_advertised_friendly'] == '2.8000 GHz'
+	assert info['hz_actual_friendly'] == '2.8000 GHz'
+	assert info['hz_advertised'] == (2800000000, 0)
+	assert info['hz_actual'] == (2800000000, 0)
 
-		assert info['vendor_id_raw'] == 'GenuineIntel'
-		assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
-		assert info['hz_advertised_friendly'] == '2.8000 GHz'
-		assert info['hz_actual_friendly'] == '2.8000 GHz'
-		assert info['hz_advertised'] == (2800000000, 0)
-		assert info['hz_actual'] == (2800000000, 0)
+	assert info['stepping'] == 7
+	assert info['model'] == 42
+	assert info['family'] == 6
+	assert info['flags'] == [
+		'apic',
+		'cmov',
+		'cx16',
+		'cx8',
+		'de',
+		'fpu',
+		'fxsr',
+		'htt',
+		'lahf',
+		'lm',
+		'mca',
+		'mce',
+		'mmx',
+		'msr',
+		'mtrr',
+		'nx',
+		'osxsave',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'sse4.1',
+		'sse4.2',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'vme',
+		'xsave',
+	]
 
-		assert info['stepping'] == 7
-		assert info['model'] == 42
-		assert info['family'] == 6
-		assert info['flags'] == [
-			'apic',
-			'cmov',
-			'cx16',
-			'cx8',
-			'de',
-			'fpu',
-			'fxsr',
-			'htt',
-			'lahf',
-			'lm',
-			'mca',
-			'mce',
-			'mmx',
-			'msr',
-			'mtrr',
-			'nx',
-			'osxsave',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'sse4.1',
-			'sse4.2',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'vme',
-			'xsave',
-		]
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+def test_get_cpu_info_from_cat_var_run_dmesg_boot():
+	info = cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()
 
-		assert info['vendor_id_raw'] == 'GenuineIntel'
-		assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
-		assert info['hz_advertised_friendly'] == '2.8000 GHz'
-		assert info['hz_actual_friendly'] == '2.8000 GHz'
-		assert info['hz_advertised'] == (2800000000, 0)
-		assert info['hz_actual'] == (2800000000, 0)
-		assert info['arch'] == 'X86_64'
-		assert info['bits'] == 64
-		assert info['count'] == 1
+	assert info['vendor_id_raw'] == 'GenuineIntel'
+	assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
+	assert info['hz_advertised_friendly'] == '2.8000 GHz'
+	assert info['hz_actual_friendly'] == '2.8000 GHz'
+	assert info['hz_advertised'] == (2800000000, 0)
+	assert info['hz_actual'] == (2800000000, 0)
 
-		assert info['arch_string_raw'] == 'amd64'
+	assert info['stepping'] == 7
+	assert info['model'] == 42
+	assert info['family'] == 6
+	assert info['flags'] == [
+		'apic',
+		'cmov',
+		'cx16',
+		'cx8',
+		'de',
+		'fpu',
+		'fxsr',
+		'htt',
+		'lahf',
+		'lm',
+		'mca',
+		'mce',
+		'mmx',
+		'msr',
+		'mtrr',
+		'nx',
+		'osxsave',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'sse4.1',
+		'sse4.2',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'vme',
+		'xsave',
+	]
 
-		assert info['stepping'] == 7
-		assert info['model'] == 42
-		assert info['family'] == 6
-		assert info['flags'] == [
-			'apic',
-			'cmov',
-			'cx16',
-			'cx8',
-			'de',
-			'fpu',
-			'fxsr',
-			'htt',
-			'lahf',
-			'lm',
-			'mca',
-			'mce',
-			'mmx',
-			'msr',
-			'mtrr',
-			'nx',
-			'osxsave',
-			'pae',
-			'pat',
-			'pclmulqdq',
-			'pge',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdtscp',
-			'sep',
-			'sse',
-			'sse2',
-			'sse3',
-			'sse4.1',
-			'sse4.2',
-			'ssse3',
-			'syscall',
-			'tsc',
-			'vme',
-			'xsave',
-		]
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['vendor_id_raw'] == 'GenuineIntel'
+	assert info['brand_raw'] == 'Intel(R) Pentium(R) CPU G640 @ 2.80GHz'
+	assert info['hz_advertised_friendly'] == '2.8000 GHz'
+	assert info['hz_actual_friendly'] == '2.8000 GHz'
+	assert info['hz_advertised'] == (2800000000, 0)
+	assert info['hz_actual'] == (2800000000, 0)
+	assert info['arch'] == 'X86_64'
+	assert info['bits'] == 64
+	assert info['count'] == 1
+
+	assert info['arch_string_raw'] == 'amd64'
+
+	assert info['stepping'] == 7
+	assert info['model'] == 42
+	assert info['family'] == 6
+	assert info['flags'] == [
+		'apic',
+		'cmov',
+		'cx16',
+		'cx8',
+		'de',
+		'fpu',
+		'fxsr',
+		'htt',
+		'lahf',
+		'lm',
+		'mca',
+		'mce',
+		'mmx',
+		'msr',
+		'mtrr',
+		'nx',
+		'osxsave',
+		'pae',
+		'pat',
+		'pclmulqdq',
+		'pge',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdtscp',
+		'sep',
+		'sse',
+		'sse2',
+		'sse3',
+		'sse4.1',
+		'sse4.2',
+		'ssse3',
+		'syscall',
+		'tsc',
+		'vme',
+		'xsave',
+	]

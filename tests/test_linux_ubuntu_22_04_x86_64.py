@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -523,435 +523,436 @@ Vulnerability Tsx async abort:   Not affected
 		return returncode, output
 
 
-class TestLinuxUbuntu_22_04_X86_64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 14
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 11
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 21
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 14
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 11
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 21
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '3.7000 GHz'
-		assert info['hz_actual_friendly'] == '3.7000 GHz'
-		assert info['hz_advertised'] == (3700000000, 0)
-		assert info['hz_actual'] == (3700000000, 0)
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert info['l1_instruction_cache_size'] == (512 * 1024)
-		assert info['l1_data_cache_size'] == (256 * 1024)
-		assert info['l2_cache_size'] == ((4 * 1024) * 1024)
-		assert info['l3_cache_size'] == ((16 * 1024) * 1024)
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'adx',
-			'aes',
-			'aperfmperf',
-			'apic',
-			'arat',
-			'avic',
-			'avx',
-			'avx2',
-			'bmi1',
-			'bmi2',
-			'bpext',
-			'clflush',
-			'clflushopt',
-			'clzero',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'decodeassists',
-			'extapic',
-			'extd_apicid',
-			'f16c',
-			'flushbyasid',
-			'fma',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hw_pstate',
-			'ibpb',
-			'irperf',
-			'lahf_lm',
-			'lbrv',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'monitor',
-			'movbe',
-			'msr',
-			'mtrr',
-			'mwaitx',
-			'nonstop_tsc',
-			'nopl',
-			'npt',
-			'nrip_save',
-			'nx',
-			'osvw',
-			'overflow_recov',
-			'pae',
-			'pat',
-			'pausefilter',
-			'pclmulqdq',
-			'pdpe1gb',
-			'perfctr_core',
-			'perfctr_llc',
-			'perfctr_nb',
-			'pfthreshold',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rapl',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'sev',
-			'sev_es',
-			'sha_ni',
-			'skinit',
-			'smap',
-			'smca',
-			'sme',
-			'smep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'succor',
-			'svm',
-			'svm_lock',
-			'syscall',
-			'tce',
-			'topoext',
-			'tsc',
-			'tsc_scale',
-			'v_vmsave_vmload',
-			'vgif',
-			'vmcb_clean',
-			'vme',
-			'vmmcall',
-			'wdt',
-			'xgetbv1',
-			'xsave',
-			'xsavec',
-			'xsaveerptr',
-			'xsaveopt',
-			'xsaves',
-		]
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '3.7000 GHz'
+	assert info['hz_actual_friendly'] == '3.7000 GHz'
+	assert info['hz_advertised'] == (3700000000, 0)
+	assert info['hz_actual'] == (3700000000, 0)
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '2.2000 GHz'
-		assert info['hz_actual_friendly'] == '2.2000 GHz'
-		assert info['hz_advertised'] == (2200000000, 0)
-		assert info['hz_actual'] == (2200000000, 0)
+	assert info['l1_instruction_cache_size'] == (512 * 1024)
+	assert info['l1_data_cache_size'] == (256 * 1024)
+	assert info['l2_cache_size'] == ((4 * 1024) * 1024)
+	assert info['l3_cache_size'] == ((16 * 1024) * 1024)
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'adx',
+		'aes',
+		'aperfmperf',
+		'apic',
+		'arat',
+		'avic',
+		'avx',
+		'avx2',
+		'bmi1',
+		'bmi2',
+		'bpext',
+		'clflush',
+		'clflushopt',
+		'clzero',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'decodeassists',
+		'extapic',
+		'extd_apicid',
+		'f16c',
+		'flushbyasid',
+		'fma',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hw_pstate',
+		'ibpb',
+		'irperf',
+		'lahf_lm',
+		'lbrv',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'monitor',
+		'movbe',
+		'msr',
+		'mtrr',
+		'mwaitx',
+		'nonstop_tsc',
+		'nopl',
+		'npt',
+		'nrip_save',
+		'nx',
+		'osvw',
+		'overflow_recov',
+		'pae',
+		'pat',
+		'pausefilter',
+		'pclmulqdq',
+		'pdpe1gb',
+		'perfctr_core',
+		'perfctr_llc',
+		'perfctr_nb',
+		'pfthreshold',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rapl',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'sev',
+		'sev_es',
+		'sha_ni',
+		'skinit',
+		'smap',
+		'smca',
+		'sme',
+		'smep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'succor',
+		'svm',
+		'svm_lock',
+		'syscall',
+		'tce',
+		'topoext',
+		'tsc',
+		'tsc_scale',
+		'v_vmsave_vmload',
+		'vgif',
+		'vmcb_clean',
+		'vme',
+		'vmmcall',
+		'wdt',
+		'xgetbv1',
+		'xsave',
+		'xsavec',
+		'xsaveerptr',
+		'xsaveopt',
+		'xsaves',
+	]
 
-		assert info['l3_cache_size'] == (512 * 1024)
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'adx',
-			'aes',
-			'aperfmperf',
-			'apic',
-			'arat',
-			'avic',
-			'avx',
-			'avx2',
-			'bmi1',
-			'bmi2',
-			'bpext',
-			'clflush',
-			'clflushopt',
-			'clzero',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'decodeassists',
-			'extapic',
-			'extd_apicid',
-			'f16c',
-			'flushbyasid',
-			'fma',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hw_pstate',
-			'ibpb',
-			'irperf',
-			'lahf_lm',
-			'lbrv',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'monitor',
-			'movbe',
-			'msr',
-			'mtrr',
-			'mwaitx',
-			'nonstop_tsc',
-			'nopl',
-			'npt',
-			'nrip_save',
-			'nx',
-			'osvw',
-			'overflow_recov',
-			'pae',
-			'pat',
-			'pausefilter',
-			'pclmulqdq',
-			'pdpe1gb',
-			'perfctr_core',
-			'perfctr_llc',
-			'perfctr_nb',
-			'pfthreshold',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rapl',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'sev',
-			'sev_es',
-			'sha_ni',
-			'skinit',
-			'smap',
-			'smca',
-			'sme',
-			'smep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'succor',
-			'svm',
-			'svm_lock',
-			'syscall',
-			'tce',
-			'topoext',
-			'tsc',
-			'tsc_scale',
-			'v_vmsave_vmload',
-			'vgif',
-			'vmcb_clean',
-			'vme',
-			'vmmcall',
-			'wdt',
-			'xgetbv1',
-			'xsave',
-			'xsavec',
-			'xsaveerptr',
-			'xsaveopt',
-			'xsaves',
-		]
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '2.2000 GHz'
+	assert info['hz_actual_friendly'] == '2.2000 GHz'
+	assert info['hz_advertised'] == (2200000000, 0)
+	assert info['hz_actual'] == (2200000000, 0)
 
-		assert info['vendor_id_raw'] == 'AuthenticAMD'
-		assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
-		assert info['hz_advertised_friendly'] == '2.2000 GHz'
-		assert info['hz_actual_friendly'] == '2.2000 GHz'
-		assert info['hz_advertised'] == (2200000000, 0)
-		assert info['hz_actual'] == (2200000000, 0)
-		assert info['arch'] == 'X86_64'
-		assert info['bits'] == 64
-		assert info['count'] == 16
+	assert info['l3_cache_size'] == (512 * 1024)
 
-		assert info['arch_string_raw'] == 'x86_64'
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'adx',
+		'aes',
+		'aperfmperf',
+		'apic',
+		'arat',
+		'avic',
+		'avx',
+		'avx2',
+		'bmi1',
+		'bmi2',
+		'bpext',
+		'clflush',
+		'clflushopt',
+		'clzero',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'decodeassists',
+		'extapic',
+		'extd_apicid',
+		'f16c',
+		'flushbyasid',
+		'fma',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hw_pstate',
+		'ibpb',
+		'irperf',
+		'lahf_lm',
+		'lbrv',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'monitor',
+		'movbe',
+		'msr',
+		'mtrr',
+		'mwaitx',
+		'nonstop_tsc',
+		'nopl',
+		'npt',
+		'nrip_save',
+		'nx',
+		'osvw',
+		'overflow_recov',
+		'pae',
+		'pat',
+		'pausefilter',
+		'pclmulqdq',
+		'pdpe1gb',
+		'perfctr_core',
+		'perfctr_llc',
+		'perfctr_nb',
+		'pfthreshold',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rapl',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'sev',
+		'sev_es',
+		'sha_ni',
+		'skinit',
+		'smap',
+		'smca',
+		'sme',
+		'smep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'succor',
+		'svm',
+		'svm_lock',
+		'syscall',
+		'tce',
+		'topoext',
+		'tsc',
+		'tsc_scale',
+		'v_vmsave_vmload',
+		'vgif',
+		'vmcb_clean',
+		'vme',
+		'vmmcall',
+		'wdt',
+		'xgetbv1',
+		'xsave',
+		'xsavec',
+		'xsaveerptr',
+		'xsaveopt',
+		'xsaves',
+	]
 
-		assert info['l1_instruction_cache_size'] == (512 * 1024)
-		assert info['l1_data_cache_size'] == (256 * 1024)
-		assert info['l2_cache_size'] == ((4 * 1024) * 1024)
-		assert info['l3_cache_size'] == (512 * 1024)
 
-		assert info['stepping'] == 2
-		assert info['model'] == 8
-		assert info['family'] == 23
-		assert info['flags'] == [
-			'3dnowprefetch',
-			'abm',
-			'adx',
-			'aes',
-			'aperfmperf',
-			'apic',
-			'arat',
-			'avic',
-			'avx',
-			'avx2',
-			'bmi1',
-			'bmi2',
-			'bpext',
-			'clflush',
-			'clflushopt',
-			'clzero',
-			'cmov',
-			'cmp_legacy',
-			'constant_tsc',
-			'cpb',
-			'cpuid',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'de',
-			'decodeassists',
-			'extapic',
-			'extd_apicid',
-			'f16c',
-			'flushbyasid',
-			'fma',
-			'fpu',
-			'fsgsbase',
-			'fxsr',
-			'fxsr_opt',
-			'ht',
-			'hw_pstate',
-			'ibpb',
-			'irperf',
-			'lahf_lm',
-			'lbrv',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'mmxext',
-			'monitor',
-			'movbe',
-			'msr',
-			'mtrr',
-			'mwaitx',
-			'nonstop_tsc',
-			'nopl',
-			'npt',
-			'nrip_save',
-			'nx',
-			'osvw',
-			'overflow_recov',
-			'pae',
-			'pat',
-			'pausefilter',
-			'pclmulqdq',
-			'pdpe1gb',
-			'perfctr_core',
-			'perfctr_llc',
-			'perfctr_nb',
-			'pfthreshold',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rapl',
-			'rdrand',
-			'rdseed',
-			'rdtscp',
-			'rep_good',
-			'sep',
-			'sev',
-			'sev_es',
-			'sha_ni',
-			'skinit',
-			'smap',
-			'smca',
-			'sme',
-			'smep',
-			'ssbd',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'succor',
-			'svm',
-			'svm_lock',
-			'syscall',
-			'tce',
-			'topoext',
-			'tsc',
-			'tsc_scale',
-			'v_vmsave_vmload',
-			'vgif',
-			'vmcb_clean',
-			'vme',
-			'vmmcall',
-			'wdt',
-			'xgetbv1',
-			'xsave',
-			'xsavec',
-			'xsaveerptr',
-			'xsaveopt',
-			'xsaves',
-		]
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['vendor_id_raw'] == 'AuthenticAMD'
+	assert info['brand_raw'] == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	assert info['hz_advertised_friendly'] == '2.2000 GHz'
+	assert info['hz_actual_friendly'] == '2.2000 GHz'
+	assert info['hz_advertised'] == (2200000000, 0)
+	assert info['hz_actual'] == (2200000000, 0)
+	assert info['arch'] == 'X86_64'
+	assert info['bits'] == 64
+	assert info['count'] == 16
+
+	assert info['arch_string_raw'] == 'x86_64'
+
+	assert info['l1_instruction_cache_size'] == (512 * 1024)
+	assert info['l1_data_cache_size'] == (256 * 1024)
+	assert info['l2_cache_size'] == ((4 * 1024) * 1024)
+	assert info['l3_cache_size'] == (512 * 1024)
+
+	assert info['stepping'] == 2
+	assert info['model'] == 8
+	assert info['family'] == 23
+	assert info['flags'] == [
+		'3dnowprefetch',
+		'abm',
+		'adx',
+		'aes',
+		'aperfmperf',
+		'apic',
+		'arat',
+		'avic',
+		'avx',
+		'avx2',
+		'bmi1',
+		'bmi2',
+		'bpext',
+		'clflush',
+		'clflushopt',
+		'clzero',
+		'cmov',
+		'cmp_legacy',
+		'constant_tsc',
+		'cpb',
+		'cpuid',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'de',
+		'decodeassists',
+		'extapic',
+		'extd_apicid',
+		'f16c',
+		'flushbyasid',
+		'fma',
+		'fpu',
+		'fsgsbase',
+		'fxsr',
+		'fxsr_opt',
+		'ht',
+		'hw_pstate',
+		'ibpb',
+		'irperf',
+		'lahf_lm',
+		'lbrv',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'mmxext',
+		'monitor',
+		'movbe',
+		'msr',
+		'mtrr',
+		'mwaitx',
+		'nonstop_tsc',
+		'nopl',
+		'npt',
+		'nrip_save',
+		'nx',
+		'osvw',
+		'overflow_recov',
+		'pae',
+		'pat',
+		'pausefilter',
+		'pclmulqdq',
+		'pdpe1gb',
+		'perfctr_core',
+		'perfctr_llc',
+		'perfctr_nb',
+		'pfthreshold',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rapl',
+		'rdrand',
+		'rdseed',
+		'rdtscp',
+		'rep_good',
+		'sep',
+		'sev',
+		'sev_es',
+		'sha_ni',
+		'skinit',
+		'smap',
+		'smca',
+		'sme',
+		'smep',
+		'ssbd',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'succor',
+		'svm',
+		'svm_lock',
+		'syscall',
+		'tce',
+		'topoext',
+		'tsc',
+		'tsc_scale',
+		'v_vmsave_vmload',
+		'vgif',
+		'vmcb_clean',
+		'vme',
+		'vmmcall',
+		'wdt',
+		'xgetbv1',
+		'xsave',
+		'xsavec',
+		'xsaveerptr',
+		'xsaveopt',
+		'xsaves',
+	]

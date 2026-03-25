@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -59,61 +59,62 @@ CPU min MHz:           700.0000
 		return returncode, output
 
 
-class TestLinux_RaspberryPiModelB(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 4
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 3
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 14
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 4
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 3
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 14
 
-		assert info['hz_advertised_friendly'] == '700.0000 MHz'
-		assert info['hz_actual_friendly'] == '700.0000 MHz'
-		assert info['hz_advertised'] == (700000000, 0)
-		assert info['hz_actual'] == (700000000, 0)
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert info['hardware_raw'] == 'BCM2708'
-		assert info['brand_raw'] == 'ARMv6-compatible processor rev 7 (v6l)'
+	assert info['hz_advertised_friendly'] == '700.0000 MHz'
+	assert info['hz_actual_friendly'] == '700.0000 MHz'
+	assert info['hz_advertised'] == (700000000, 0)
+	assert info['hz_actual'] == (700000000, 0)
 
-		assert info['flags'] == ['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
 
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-		assert info['hardware_raw'] == 'BCM2708'
-		assert info['brand_raw'] == 'ARMv6-compatible processor rev 7 (v6l)'
-		assert info['hz_advertised_friendly'] == '700.0000 MHz'
-		assert info['hz_actual_friendly'] == '700.0000 MHz'
-		assert info['hz_advertised'] == (700000000, 0)
-		assert info['hz_actual'] == (700000000, 0)
-		assert info['arch'] == 'ARM_7'
-		assert info['bits'] == 32
-		assert info['count'] == 1
+	assert info['hardware_raw'] == 'BCM2708'
+	assert info['brand_raw'] == 'ARMv6-compatible processor rev 7 (v6l)'
 
-		assert info['arch_string_raw'] == 'armv6l'
+	assert info['flags'] == ['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
 
-		assert info['flags'] == ['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
+
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
+
+	assert info['hardware_raw'] == 'BCM2708'
+	assert info['brand_raw'] == 'ARMv6-compatible processor rev 7 (v6l)'
+	assert info['hz_advertised_friendly'] == '700.0000 MHz'
+	assert info['hz_actual_friendly'] == '700.0000 MHz'
+	assert info['hz_advertised'] == (700000000, 0)
+	assert info['hz_actual'] == (700000000, 0)
+	assert info['arch'] == 'ARM_7'
+	assert info['bits'] == 32
+	assert info['count'] == 1
+
+	assert info['arch_string_raw'] == 'armv6l'
+
+	assert info['flags'] == ['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']

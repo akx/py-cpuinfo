@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from tests import helpers
@@ -103,75 +103,76 @@ NUMA node1 CPU(s):     48-95
 		return returncode, output
 
 
-class TestLinux_Aarch_64(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-	'''
-	Make sure calls return the expected number of fields.
-	'''
+'''
+Make sure calls return the expected number of fields.
+'''
 
-	def test_returns(self):
-		assert len(cpuinfo._get_cpu_info_from_registry()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
-		assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
-		assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 1
-		assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
-		assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
-		assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
-		assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
-		assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
-		assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
-		assert len(cpuinfo._get_cpu_info_internal()) == 11
 
-	def test_get_cpu_info_from_lscpu(self):
-		info = cpuinfo._get_cpu_info_from_lscpu()
+def test_returns():
+	assert len(cpuinfo._get_cpu_info_from_registry()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpufreq_info()) == 0
+	assert len(cpuinfo._get_cpu_info_from_lscpu()) == 3
+	assert len(cpuinfo._get_cpu_info_from_proc_cpuinfo()) == 1
+	assert len(cpuinfo._get_cpu_info_from_sysctl()) == 0
+	assert len(cpuinfo._get_cpu_info_from_kstat()) == 0
+	assert len(cpuinfo._get_cpu_info_from_dmesg()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cat_var_run_dmesg_boot()) == 0
+	assert len(cpuinfo._get_cpu_info_from_ibm_pa_features()) == 0
+	assert len(cpuinfo._get_cpu_info_from_sysinfo()) == 0
+	assert len(cpuinfo._get_cpu_info_from_cpuid()) == 0
+	assert len(cpuinfo._get_cpu_info_internal()) == 11
 
-		assert info['l1_instruction_cache_size'] == (78 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
 
-		assert info['l2_cache_size'] == (16384 * 1024)
+def test_get_cpu_info_from_lscpu():
+	info = cpuinfo._get_cpu_info_from_lscpu()
 
-		assert len(info) == 3
+	assert info['l1_instruction_cache_size'] == (78 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
 
-	def test_get_cpu_info_from_proc_cpuinfo(self):
-		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
+	assert info['l2_cache_size'] == (16384 * 1024)
 
-		assert info['flags'] == ['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2']
+	assert len(info) == 3
 
-	@unittest.skip("FIXME: This fails because it does not have a way to get CPU brand string and Hz.")
-	def test_all(self):
-		info = cpuinfo._get_cpu_info_internal()
 
-		assert info['vendor_id_raw'] == ''
-		assert info['hardware_raw'] == 'FIXME'
-		assert info['brand_raw'] == 'FIXME'
-		assert info['hz_advertised_friendly'] == 'FIXME'
-		assert info['hz_actual_friendly'] == 'FIXME'
-		assert info['hz_advertised'] == (1000000000, 0)
-		assert info['hz_actual'] == (1000000000, 0)
-		assert info['arch'] == 'ARM_8'
-		assert info['bits'] == 64
-		assert info['count'] == 6
+def test_get_cpu_info_from_proc_cpuinfo():
+	info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-		assert info['arch_string_raw'] == 'aarch64'
+	assert info['flags'] == ['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2']
 
-		assert info['l1_instruction_cache_size'] == (78 * 1024)
-		assert info['l1_data_cache_size'] == (32 * 1024)
 
-		assert info['l2_cache_size'] == (16384 * 1024)
-		assert info['l2_cache_line_size'] == 0
-		assert info['l2_cache_associativity'] == 0
+@pytest.mark.skip("FIXME: This fails because it does not have a way to get CPU brand string and Hz.")
+def test_all():
+	info = cpuinfo._get_cpu_info_internal()
 
-		assert info['l3_cache_size'] == 0
+	assert info['vendor_id_raw'] == ''
+	assert info['hardware_raw'] == 'FIXME'
+	assert info['brand_raw'] == 'FIXME'
+	assert info['hz_advertised_friendly'] == 'FIXME'
+	assert info['hz_actual_friendly'] == 'FIXME'
+	assert info['hz_advertised'] == (1000000000, 0)
+	assert info['hz_actual'] == (1000000000, 0)
+	assert info['arch'] == 'ARM_8'
+	assert info['bits'] == 64
+	assert info['count'] == 6
 
-		assert info['stepping'] == 0
-		assert info['model'] == 0
-		assert info['family'] == 0
-		assert info['processor_type'] == 0
-		assert info['flags'] == ['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2']
+	assert info['arch_string_raw'] == 'aarch64'
+
+	assert info['l1_instruction_cache_size'] == (78 * 1024)
+	assert info['l1_data_cache_size'] == (32 * 1024)
+
+	assert info['l2_cache_size'] == (16384 * 1024)
+	assert info['l2_cache_line_size'] == 0
+	assert info['l2_cache_associativity'] == 0
+
+	assert info['l3_cache_size'] == 0
+
+	assert info['stepping'] == 0
+	assert info['model'] == 0
+	assert info['family'] == 0
+	assert info['processor_type'] == 0
+	assert info['flags'] == ['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2']

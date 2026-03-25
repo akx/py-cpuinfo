@@ -1,4 +1,4 @@
-import unittest
+import pytest
 
 from cpuinfo import cpuinfo
 from cpuinfo.cpuinfo import ASM, CPUID, platform
@@ -246,114 +246,109 @@ class MockDataSource:
 	can_cpuid = True
 
 
-class TestCPUID(unittest.TestCase):
-	def setUp(self):
-		helpers.backup_data_source(cpuinfo)
-		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
+@pytest.fixture(autouse=True)
+def _setup(monkeypatch):
+	helpers.monkey_patch_data_source(cpuinfo, MockDataSource, monkeypatch)
 
-		helpers.backup_asm(cpuinfo)
-		helpers.monkey_patch_asm(cpuinfo, MockASM)
+	helpers.monkey_patch_asm(cpuinfo, MockASM, monkeypatch)
 
-	def tearDown(self):
-		helpers.restore_data_source(cpuinfo)
 
-		helpers.restore_asm(cpuinfo)
+# Make sure this returns {} on an invalid arch
+def test_return_empty():
+	assert cpuinfo._get_cpu_info_from_cpuid() == {}
 
-	# Make sure this returns {} on an invalid arch
-	def test_return_empty(self):
-		assert cpuinfo._get_cpu_info_from_cpuid() == {}
 
-	def test_normal(self):
-		cpuid = CPUID()
-		assert cpuid is not None
+def test_normal():
+	cpuid = CPUID()
+	assert cpuid is not None
 
-		assert not cpuid.is_selinux_enforcing
+	assert not cpuid.is_selinux_enforcing
 
-		max_extension_support = cpuid.get_max_extension_support()
-		assert max_extension_support == 2147483679
+	max_extension_support = cpuid.get_max_extension_support()
+	assert max_extension_support == 2147483679
 
-		cache_info = cpuid.get_cache(max_extension_support)
-		assert cache_info == {'size_b': (64 * 1024), 'line_size_b': 512, 'associativity': 6}
+	cache_info = cpuid.get_cache(max_extension_support)
+	assert cache_info == {'size_b': (64 * 1024), 'line_size_b': 512, 'associativity': 6}
 
-		info = cpuid.get_info()
-		assert info == {'stepping': 2, 'model': 8, 'family': 23, 'processor_type': 0}
+	info = cpuid.get_info()
+	assert info == {'stepping': 2, 'model': 8, 'family': 23, 'processor_type': 0}
 
-		processor_brand = cpuid.get_processor_brand(max_extension_support)
-		assert processor_brand == 'AMD Ryzen 7 2700X Eight-Core Processor'
+	processor_brand = cpuid.get_processor_brand(max_extension_support)
+	assert processor_brand == 'AMD Ryzen 7 2700X Eight-Core Processor'
 
-		hz_actual = cpuid.get_raw_hz()
-		assert hz_actual == 3728101944
+	hz_actual = cpuid.get_raw_hz()
+	assert hz_actual == 3728101944
 
-		vendor_id = cpuid.get_vendor_id()
-		assert vendor_id == 'AuthenticAMD'
+	vendor_id = cpuid.get_vendor_id()
+	assert vendor_id == 'AuthenticAMD'
 
-		flags = cpuid.get_flags(max_extension_support)
-		assert flags == [
-			'3dnowprefetch',
-			'abm',
-			'adx',
-			'aes',
-			'apic',
-			'avx',
-			'avx2',
-			'bmi1',
-			'bmi2',
-			'clflush',
-			'clflushopt',
-			'cmov',
-			'cmp_legacy',
-			'cr8_legacy',
-			'cx16',
-			'cx8',
-			'dbx',
-			'de',
-			'extapic',
-			'f16c',
-			'fma',
-			'fpu',
-			'fxsr',
-			'ht',
-			'lahf_lm',
-			'lm',
-			'mca',
-			'mce',
-			'misalignsse',
-			'mmx',
-			'monitor',
-			'movbe',
-			'msr',
-			'mtrr',
-			'osvw',
-			'osxsave',
-			'pae',
-			'pat',
-			'pci_l2i',
-			'pclmulqdq',
-			'perfctr_core',
-			'perfctr_nb',
-			'pge',
-			'pni',
-			'popcnt',
-			'pse',
-			'pse36',
-			'rdrnd',
-			'rdseed',
-			'sep',
-			'sha',
-			'skinit',
-			'smap',
-			'smep',
-			'sse',
-			'sse2',
-			'sse4_1',
-			'sse4_2',
-			'sse4a',
-			'ssse3',
-			'svm',
-			'tce',
-			'topoext',
-			'tsc',
-			'vme',
-			'wdt',
-			'xsave',
-		]
+	flags = cpuid.get_flags(max_extension_support)
+	assert flags == [
+		'3dnowprefetch',
+		'abm',
+		'adx',
+		'aes',
+		'apic',
+		'avx',
+		'avx2',
+		'bmi1',
+		'bmi2',
+		'clflush',
+		'clflushopt',
+		'cmov',
+		'cmp_legacy',
+		'cr8_legacy',
+		'cx16',
+		'cx8',
+		'dbx',
+		'de',
+		'extapic',
+		'f16c',
+		'fma',
+		'fpu',
+		'fxsr',
+		'ht',
+		'lahf_lm',
+		'lm',
+		'mca',
+		'mce',
+		'misalignsse',
+		'mmx',
+		'monitor',
+		'movbe',
+		'msr',
+		'mtrr',
+		'osvw',
+		'osxsave',
+		'pae',
+		'pat',
+		'pci_l2i',
+		'pclmulqdq',
+		'perfctr_core',
+		'perfctr_nb',
+		'pge',
+		'pni',
+		'popcnt',
+		'pse',
+		'pse36',
+		'rdrnd',
+		'rdseed',
+		'sep',
+		'sha',
+		'skinit',
+		'smap',
+		'smep',
+		'sse',
+		'sse2',
+		'sse4_1',
+		'sse4_2',
+		'sse4a',
+		'ssse3',
+		'svm',
+		'tce',
+		'topoext',
+		'tsc',
+		'vme',
+		'wdt',
+		'xsave',
+	]
