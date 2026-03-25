@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from cpuinfo.cpuinfo import Trace
 from tests import helpers
@@ -28,6 +27,7 @@ Max kernel policy version:      31
 '''
 		return returncode, output
 
+
 class MockDataSource_not_enforcing:
 	@staticmethod
 	def has_sestatus():
@@ -50,6 +50,7 @@ Max kernel policy version:      31
 '''
 		return returncode, output
 
+
 class MockDataSource_exec_mem_and_heap:
 	@staticmethod
 	def has_sestatus():
@@ -63,6 +64,7 @@ allow_execheap                  on
 allow_execmem                   on
 '''
 		return returncode, output
+
 
 class MockDataSource_no_exec_mem_and_heap:
 	@staticmethod

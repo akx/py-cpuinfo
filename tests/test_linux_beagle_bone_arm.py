@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -41,7 +40,6 @@ Serial          : 00000000be6d9ba0
 '''
 		return returncode, output
 
-
 	@staticmethod
 	def cpufreq_info():
 		returncode = 0
@@ -76,6 +74,7 @@ class TestLinux_BeagleBone(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(4, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -104,11 +103,7 @@ class TestLinux_BeagleBone(unittest.TestCase):
 		self.assertEqual('BCM2708', info['hardware_raw'])
 		self.assertEqual('ARMv6-compatible processor rev 7 (v6l)', info['brand_raw'])
 
-		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
-			,
-			info['flags']
-		)
+		self.assertEqual(['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp'], info['flags'])
 
 	def test_all(self):
 		info = cpuinfo._get_cpu_info_internal()
@@ -125,8 +120,4 @@ class TestLinux_BeagleBone(unittest.TestCase):
 
 		self.assertEqual('armv7l', info['arch_string_raw'])
 
-		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
-			,
-			info['flags']
-		)
+		self.assertEqual(['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp'], info['flags'])

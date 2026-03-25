@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -53,8 +52,6 @@ Name=Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz
 		return 756629502
 
 
-
-
 class TestWindows_8_X86_64(unittest.TestCase):
 	def setUp(self):
 		cpuinfo.CAN_CALL_CPUID_IN_SUBPROCESS = False
@@ -62,24 +59,42 @@ class TestWindows_8_X86_64(unittest.TestCase):
 		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
 
 		helpers.backup_cpuid(cpuinfo)
-		helpers.monkey_patch_cpuid(cpuinfo, 2930000000, [
-			# max_extension_support
-			0x80000008,
-			# get_cache
-			0x1006040,
-			# get_info
-			0x106e5,
-			# get_processor_brand
-			0x65746e49, 0x2952286c, 0x726f4320,
-			0x4d542865, 0x37692029, 0x55504320,
-			0x20202020, 0x20202020, 0x30373820,
-			0x20402020, 0x33392e32, 0x7a4847,
-			# get_vendor_id
-			0x756e6547, 0x6c65746e, 0x49656e69,
-			# get_flags
-			0xbfebfbff, 0x98e3fd, 0x0,
-			0x0, 0x0, 0x1,
-		])
+		helpers.monkey_patch_cpuid(
+			cpuinfo,
+			2930000000,
+			[
+				# max_extension_support
+				0x80000008,
+				# get_cache
+				0x1006040,
+				# get_info
+				0x106E5,
+				# get_processor_brand
+				0x65746E49,
+				0x2952286C,
+				0x726F4320,
+				0x4D542865,
+				0x37692029,
+				0x55504320,
+				0x20202020,
+				0x20202020,
+				0x30373820,
+				0x20402020,
+				0x33392E32,
+				0x7A4847,
+				# get_vendor_id
+				0x756E6547,
+				0x6C65746E,
+				0x49656E69,
+				# get_flags
+				0xBFEBFBFF,
+				0x98E3FD,
+				0x0,
+				0x0,
+				0x0,
+				0x1,
+			],
+		)
 
 	def tearDown(self):
 		helpers.restore_data_source(cpuinfo)
@@ -89,8 +104,9 @@ class TestWindows_8_X86_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
-		self.assertEqual(11, len(cpuinfo._get_cpu_info_from_wmic()));
+		self.assertEqual(11, len(cpuinfo._get_cpu_info_from_wmic()))
 		self.assertEqual(7, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_lscpu()))
@@ -110,9 +126,9 @@ class TestWindows_8_X86_64(unittest.TestCase):
 
 		self.assertEqual('GenuineIntel', info['vendor_id_raw'])
 		self.assertEqual('Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz', info['brand_raw'])
-		#self.assertEqual('2.9300 GHz', info['hz_advertised_friendly'])
+		# self.assertEqual('2.9300 GHz', info['hz_advertised_friendly'])
 		self.assertEqual('2.9300 GHz', info['hz_actual_friendly'])
-		#self.assertEqual((2930000000, 0), info['hz_advertised'])
+		# self.assertEqual((2930000000, 0), info['hz_advertised'])
 		self.assertEqual((2930000000, 0), info['hz_actual'])
 
 		self.assertEqual(5, info['stepping'])
@@ -124,14 +140,53 @@ class TestWindows_8_X86_64(unittest.TestCase):
 		self.assertEqual(6, info['l2_cache_associativity'])
 
 		self.assertEqual(
-			['acpi', 'apic', 'clflush', 'cmov', 'cx16', 'cx8', 'de', 'ds_cpl',
-			'dtes64', 'dts', 'est', 'fpu', 'fxsr', 'ht', 'lahf_lm', 'mca',
-			'mce', 'mmx', 'monitor', 'msr', 'mtrr', 'pae', 'pat', 'pbe',
-			'pdcm', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'sep', 'smx',
-			'ss', 'sse', 'sse2', 'sse4_1', 'sse4_2', 'ssse3', 'tm', 'tm2',
-			'tsc', 'vme', 'vmx', 'xtpr']
-			,
-			info['flags']
+			[
+				'acpi',
+				'apic',
+				'clflush',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'ds_cpl',
+				'dtes64',
+				'dts',
+				'est',
+				'fpu',
+				'fxsr',
+				'ht',
+				'lahf_lm',
+				'mca',
+				'mce',
+				'mmx',
+				'monitor',
+				'msr',
+				'mtrr',
+				'pae',
+				'pat',
+				'pbe',
+				'pdcm',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'sep',
+				'smx',
+				'ss',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'ssse3',
+				'tm',
+				'tm2',
+				'tsc',
+				'vme',
+				'vmx',
+				'xtpr',
+			],
+			info['flags'],
 		)
 
 	def test_get_cpu_info_from_platform_uname(self):
@@ -169,11 +224,27 @@ class TestWindows_8_X86_64(unittest.TestCase):
 		self.assertEqual((2933000000, 0), info['hz_actual'])
 
 		self.assertEqual(
-			['acpi', 'clflush', 'cmov', 'de', 'dts', 'fxsr', 'ia64',
-			'mce', 'mmx', 'msr', 'mtrr', 'sep', 'serial', 'ss',
-			'sse', 'sse2', 'tm', 'tsc']
-			,
-			info['flags']
+			[
+				'acpi',
+				'clflush',
+				'cmov',
+				'de',
+				'dts',
+				'fxsr',
+				'ia64',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'sep',
+				'serial',
+				'ss',
+				'sse',
+				'sse2',
+				'tm',
+				'tsc',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -201,12 +272,53 @@ class TestWindows_8_X86_64(unittest.TestCase):
 		self.assertEqual(256, info['l2_cache_line_size'])
 
 		self.assertEqual(
-			['acpi', 'apic', 'clflush', 'cmov', 'cx16', 'cx8', 'de', 'ds_cpl',
-			'dtes64', 'dts', 'est', 'fpu', 'fxsr', 'ht', 'ia64', 'lahf_lm',
-			'mca', 'mce', 'mmx', 'monitor', 'msr', 'mtrr', 'pae', 'pat',
-			'pbe', 'pdcm', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'sep',
-			'serial', 'smx', 'ss', 'sse', 'sse2', 'sse4_1', 'sse4_2', 'ssse3',
-			'tm', 'tm2', 'tsc', 'vme', 'vmx', 'xtpr']
-			,
-			info['flags']
+			[
+				'acpi',
+				'apic',
+				'clflush',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'ds_cpl',
+				'dtes64',
+				'dts',
+				'est',
+				'fpu',
+				'fxsr',
+				'ht',
+				'ia64',
+				'lahf_lm',
+				'mca',
+				'mce',
+				'mmx',
+				'monitor',
+				'msr',
+				'mtrr',
+				'pae',
+				'pat',
+				'pbe',
+				'pdcm',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'sep',
+				'serial',
+				'smx',
+				'ss',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'ssse3',
+				'tm',
+				'tm2',
+				'tsc',
+				'vme',
+				'vmx',
+				'xtpr',
+			],
+			info['flags'],
 		)

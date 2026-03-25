@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -58,7 +57,6 @@ CPU: Intel(R) Pentium(R) CPU G640 @ 2.80GHz (2793.73-MHz K8-class CPU)
 		return retcode, output
 
 
-
 class TestFreeBSD_11_X86_64(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -70,6 +68,7 @@ class TestFreeBSD_11_X86_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -98,13 +97,45 @@ class TestFreeBSD_11_X86_64(unittest.TestCase):
 		self.assertEqual(42, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'cmov', 'cx16', 'cx8', 'de', 'fpu', 'fxsr', 'htt',
-			'lahf', 'lm', 'mca', 'mce', 'mmx', 'msr', 'mtrr', 'nx',
-			'osxsave', 'pae', 'pat', 'pclmulqdq', 'pge', 'popcnt', 'pse',
-			'pse36', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'sse4.1',
-			'sse4.2', 'ssse3', 'syscall', 'tsc', 'vme', 'xsave']
-			,
-			info['flags']
+			[
+				'apic',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nx',
+				'osxsave',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+			],
+			info['flags'],
 		)
 
 	def test_get_cpu_info_from_cat_var_run_dmesg_boot(self):
@@ -121,13 +152,45 @@ class TestFreeBSD_11_X86_64(unittest.TestCase):
 		self.assertEqual(42, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'cmov', 'cx16', 'cx8', 'de', 'fpu', 'fxsr', 'htt',
-			'lahf', 'lm', 'mca', 'mce', 'mmx', 'msr', 'mtrr', 'nx',
-			'osxsave', 'pae', 'pat', 'pclmulqdq', 'pge', 'popcnt', 'pse',
-			'pse36', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'sse4.1',
-			'sse4.2', 'ssse3', 'syscall', 'tsc', 'vme', 'xsave']
-			,
-			info['flags']
+			[
+				'apic',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nx',
+				'osxsave',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -149,11 +212,43 @@ class TestFreeBSD_11_X86_64(unittest.TestCase):
 		self.assertEqual(42, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'cmov', 'cx16', 'cx8', 'de', 'fpu', 'fxsr', 'htt',
-			'lahf', 'lm', 'mca', 'mce', 'mmx', 'msr', 'mtrr', 'nx',
-			'osxsave', 'pae', 'pat', 'pclmulqdq', 'pge', 'popcnt', 'pse',
-			'pse36', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'sse4.1',
-			'sse4.2', 'ssse3', 'syscall', 'tsc', 'vme', 'xsave']
-			,
-			info['flags']
+			[
+				'apic',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nx',
+				'osxsave',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+			],
+			info['flags'],
 		)

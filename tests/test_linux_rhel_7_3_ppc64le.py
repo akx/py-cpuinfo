@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -331,6 +330,7 @@ class TestLinuxRHEL_7_3_ppc64le(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -355,7 +355,7 @@ class TestLinuxRHEL_7_3_ppc64le(unittest.TestCase):
 		info = cpuinfo._get_cpu_info_from_ibm_pa_features()
 		self.assertEqual(
 			['dss_2.02', 'dss_2.05', 'dss_2.06', 'fpu', 'lsd_in_dscr', 'ppr', 'slb', 'sso_2.06', 'ugr_in_dscr'],
-			info['flags']
+			info['flags'],
 		)
 
 	def test_get_cpu_info_from_proc_cpuinfo(self):
@@ -383,5 +383,5 @@ class TestLinuxRHEL_7_3_ppc64le(unittest.TestCase):
 		self.assertEqual('ppc64le', info['arch_string_raw'])
 		self.assertEqual(
 			['dss_2.02', 'dss_2.05', 'dss_2.06', 'fpu', 'lsd_in_dscr', 'ppr', 'slb', 'sso_2.06', 'ugr_in_dscr'],
-			info['flags']
+			info['flags'],
 		)

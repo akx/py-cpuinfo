@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -162,6 +161,7 @@ class TestLinux_Odroid_C2_Aarch_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(4, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -197,10 +197,7 @@ class TestLinux_Odroid_C2_Aarch_64(unittest.TestCase):
 
 		self.assertEqual('ODROID-C2', info['hardware_raw'])
 
-		self.assertEqual(
-			['asimd', 'crc32', 'fp'],
-			info['flags']
-		)
+		self.assertEqual(['asimd', 'crc32', 'fp'], info['flags'])
 
 	def test_all(self):
 		info = cpuinfo._get_cpu_info_internal()
@@ -216,7 +213,4 @@ class TestLinux_Odroid_C2_Aarch_64(unittest.TestCase):
 
 		self.assertEqual('aarch64', info['arch_string_raw'])
 
-		self.assertEqual(
-			['asimd', 'crc32', 'fp'],
-			info['flags']
-		)
+		self.assertEqual(['asimd', 'crc32', 'fp'], info['flags'])

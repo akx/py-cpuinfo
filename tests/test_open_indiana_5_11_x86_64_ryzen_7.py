@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -71,7 +70,6 @@ name:   cpu_info0                       class:    misc
 		return returncode, output
 
 
-
 class TestOpenIndiana_5_11_Ryzen_7(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -83,6 +81,7 @@ class TestOpenIndiana_5_11_Ryzen_7(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -110,11 +109,7 @@ class TestOpenIndiana_5_11_Ryzen_7(unittest.TestCase):
 		self.assertEqual(2, info['stepping'])
 		self.assertEqual(8, info['model'])
 		self.assertEqual(23, info['family'])
-		self.assertEqual(
-			['amd_mmx', 'amd_sysc', 'cmov', 'cx8', 'fpu', 'mmx', 'tsc']
-			,
-			info['flags']
-		)
+		self.assertEqual(['amd_mmx', 'amd_sysc', 'cmov', 'cx8', 'fpu', 'mmx', 'tsc'], info['flags'])
 
 	def test_all(self):
 		info = cpuinfo._get_cpu_info_internal()
@@ -134,8 +129,4 @@ class TestOpenIndiana_5_11_Ryzen_7(unittest.TestCase):
 		self.assertEqual(2, info['stepping'])
 		self.assertEqual(8, info['model'])
 		self.assertEqual(23, info['family'])
-		self.assertEqual(
-			['amd_mmx', 'amd_sysc', 'cmov', 'cx8', 'fpu', 'mmx', 'tsc']
-			,
-			info['flags']
-		)
+		self.assertEqual(['amd_mmx', 'amd_sysc', 'cmov', 'cx8', 'fpu', 'mmx', 'tsc'], info['flags'])

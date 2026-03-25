@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -59,6 +58,7 @@ CPU min MHz:           700.0000
 '''
 		return returncode, output
 
+
 class TestLinux_RaspberryPiModelB(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -70,6 +70,7 @@ class TestLinux_RaspberryPiModelB(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -98,11 +99,7 @@ class TestLinux_RaspberryPiModelB(unittest.TestCase):
 		self.assertEqual('BCM2708', info['hardware_raw'])
 		self.assertEqual('ARMv6-compatible processor rev 7 (v6l)', info['brand_raw'])
 
-		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
-			,
-			info['flags']
-		)
+		self.assertEqual(['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp'], info['flags'])
 
 	def test_all(self):
 		info = cpuinfo._get_cpu_info_internal()
@@ -119,8 +116,4 @@ class TestLinux_RaspberryPiModelB(unittest.TestCase):
 
 		self.assertEqual('armv6l', info['arch_string_raw'])
 
-		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp']
-			,
-			info['flags']
-		)
+		self.assertEqual(['edsp', 'fastmult', 'half', 'java', 'swp', 'thumb', 'tls', 'vfp'], info['flags'])

@@ -1,8 +1,8 @@
-
 # OS X 10.9 Mavericks
 # Darwin version 13
 
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -64,8 +64,6 @@ hw.cpufrequency: 2890000000
 		return returncode, output
 
 
-
-
 class TestOSX_10_9(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -77,6 +75,7 @@ class TestOSX_10_9(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -108,12 +107,43 @@ class TestOSX_10_9(unittest.TestCase):
 		self.assertEqual(6, info['family'])
 
 		self.assertEqual(
-			['apic', 'avx2', 'bmi2', 'clfsh', 'cmov', 'cx8', 'de', 'em64t', 'enfstrg', 'fpu', 'fxsr', 'htt',
-			'lahf', 'mca', 'mce', 'mmx', 'msr', 'mtrr', 'pae', 'pat', 'pge', 'pse',
-			'pse36', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'ssse3', 'syscall', 'tsc', 'vme',
-			'vmm', 'xd', ]
-			,
-			info['flags']
+			[
+				'apic',
+				'avx2',
+				'bmi2',
+				'clfsh',
+				'cmov',
+				'cx8',
+				'de',
+				'em64t',
+				'enfstrg',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'pae',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'vmm',
+				'xd',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -138,10 +168,41 @@ class TestOSX_10_9(unittest.TestCase):
 		self.assertEqual(6, info['family'])
 
 		self.assertEqual(
-			['apic', 'avx2', 'bmi2', 'clfsh', 'cmov', 'cx8', 'de', 'em64t', 'enfstrg', 'fpu', 'fxsr', 'htt',
-			'lahf', 'mca', 'mce', 'mmx', 'msr', 'mtrr', 'pae', 'pat', 'pge', 'pse',
-			'pse36', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'ssse3', 'syscall', 'tsc', 'vme',
-			'vmm', 'xd', ]
-			,
-			info['flags']
+			[
+				'apic',
+				'avx2',
+				'bmi2',
+				'clfsh',
+				'cmov',
+				'cx8',
+				'de',
+				'em64t',
+				'enfstrg',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'pae',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'vmm',
+				'xd',
+			],
+			info['flags'],
 		)

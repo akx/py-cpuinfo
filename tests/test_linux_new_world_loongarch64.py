@@ -1,11 +1,10 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
 
-class MockDataSource(object):
+class MockDataSource:
 	bits = '64bit'
 	cpu_count = 4
 	is_windows = False
@@ -115,7 +114,6 @@ NUMA node0 CPU(s):   0-3
 
 
 class TestLinux_NewWorld_loongarch64(unittest.TestCase):
-
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
 		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
@@ -126,6 +124,7 @@ class TestLinux_NewWorld_loongarch64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))

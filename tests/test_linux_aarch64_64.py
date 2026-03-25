@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -115,6 +114,7 @@ class TestLinux_Aarch_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -142,12 +142,7 @@ class TestLinux_Aarch_64(unittest.TestCase):
 	def test_get_cpu_info_from_proc_cpuinfo(self):
 		info = cpuinfo._get_cpu_info_from_proc_cpuinfo()
 
-		self.assertEqual(
-			['aes', 'asimd', 'atomics', 'crc32', 'evtstrm',
-			'fp', 'pmull', 'sha1', 'sha2']
-			,
-			info['flags']
-		)
+		self.assertEqual(['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2'], info['flags'])
 
 	@unittest.skip("FIXME: This fails because it does not have a way to get CPU brand string and Hz.")
 	def test_all(self):
@@ -179,9 +174,4 @@ class TestLinux_Aarch_64(unittest.TestCase):
 		self.assertEqual(0, info['model'])
 		self.assertEqual(0, info['family'])
 		self.assertEqual(0, info['processor_type'])
-		self.assertEqual(
-			['aes', 'asimd', 'atomics', 'crc32', 'evtstrm',
-			'fp', 'pmull', 'sha1', 'sha2']
-			,
-			info['flags']
-		)
+		self.assertEqual(['aes', 'asimd', 'atomics', 'crc32', 'evtstrm', 'fp', 'pmull', 'sha1', 'sha2'], info['flags'])

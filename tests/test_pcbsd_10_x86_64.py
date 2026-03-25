@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -39,7 +38,6 @@ CPU: Intel(R) Core(TM) i5-4440 CPU @ 3.10GHz (2993.39-MHz K8-class CPU)
 		return retcode, output
 
 
-
 class TestPCBSD(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -51,6 +49,7 @@ class TestPCBSD(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -75,12 +74,39 @@ class TestPCBSD(unittest.TestCase):
 		self.assertEqual((3100000000, 0), info['hz_actual'])
 
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'cx8', 'de', 'fpu', 'fxsr', 'lahf',
-			'lm', 'mca', 'mce', 'mmx', 'mon', 'msr', 'mtrr', 'nx', 'pae',
-			'pat', 'pge', 'pse', 'pse36', 'rdtscp', 'sep', 'sse', 'sse2',
-			'sse3', 'ssse3', 'syscall', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'lahf',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'mon',
+				'msr',
+				'mtrr',
+				'nx',
+				'pae',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -98,10 +124,37 @@ class TestPCBSD(unittest.TestCase):
 		self.assertEqual('amd64', info['arch_string_raw'])
 
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'cx8', 'de', 'fpu', 'fxsr', 'lahf',
-			'lm', 'mca', 'mce', 'mmx', 'mon', 'msr', 'mtrr', 'nx', 'pae',
-			'pat', 'pge', 'pse', 'pse36', 'rdtscp', 'sep', 'sse', 'sse2',
-			'sse3', 'ssse3', 'syscall', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'lahf',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'mon',
+				'msr',
+				'mtrr',
+				'nx',
+				'pae',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)

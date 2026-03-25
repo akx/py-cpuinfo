@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -65,7 +64,6 @@ class MockDataSource:
 	def dmesg_a():
 		return 0, ""
 
-
 	@staticmethod
 	def cat_var_run_dmesg_boot():
 		return 0, ""
@@ -118,6 +116,7 @@ class TestParseErrors(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -146,6 +145,6 @@ class TestParseErrors(unittest.TestCase):
 
 		self.assertEqual({}, cpuinfo._get_cpu_info_from_sysinfo())
 
-		#self.assertEqual({}, cpuinfo._get_cpu_info_from_cpuid())
+		# self.assertEqual({}, cpuinfo._get_cpu_info_from_cpuid())
 
-		#self.assertEqual({}, cpuinfo._get_cpu_info_internal())
+		# self.assertEqual({}, cpuinfo._get_cpu_info_internal())

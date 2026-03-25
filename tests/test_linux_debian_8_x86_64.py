@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -52,7 +51,6 @@ power management:
 		return returncode, output
 
 
-
 class TestLinuxDebian_8_X86_64(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -64,6 +62,7 @@ class TestLinuxDebian_8_X86_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -94,12 +93,42 @@ class TestLinuxDebian_8_X86_64(unittest.TestCase):
 		self.assertEqual(30, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'constant_tsc', 'cx8', 'de', 'fpu',
-			'fxsr', 'ht', 'lahf_lm', 'lm', 'mca', 'mce', 'mmx', 'msr', 'mtrr',
-			'nopl', 'nx', 'pae', 'pat', 'pge', 'pni', 'pse', 'pse36', 'rdtscp',
-			'rep_good', 'sep', 'sse', 'sse2', 'ssse3', 'syscall', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'constant_tsc',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'ht',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nopl',
+				'nx',
+				'pae',
+				'pat',
+				'pge',
+				'pni',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'rep_good',
+				'sep',
+				'sse',
+				'sse2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -123,10 +152,40 @@ class TestLinuxDebian_8_X86_64(unittest.TestCase):
 		self.assertEqual(30, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'constant_tsc', 'cx8', 'de', 'fpu',
-			'fxsr', 'ht', 'lahf_lm', 'lm', 'mca', 'mce', 'mmx', 'msr', 'mtrr',
-			'nopl', 'nx', 'pae', 'pat', 'pge', 'pni', 'pse', 'pse36', 'rdtscp',
-			'rep_good', 'sep', 'sse', 'sse2', 'ssse3', 'syscall', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'constant_tsc',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'ht',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nopl',
+				'nx',
+				'pae',
+				'pat',
+				'pge',
+				'pni',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'rep_good',
+				'sep',
+				'sse',
+				'sse2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)

@@ -1,8 +1,8 @@
-
 # OS X 10.12 Sierra
 # Darwin version 16
 
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -84,8 +84,6 @@ hw.cpufrequency: 1700000000
 		return returncode, output
 
 
-
-
 class TestOSX_10_12(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -97,6 +95,7 @@ class TestOSX_10_12(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -128,16 +127,66 @@ class TestOSX_10_12(unittest.TestCase):
 		self.assertEqual(6, info['family'])
 
 		self.assertEqual(
-			['acpi', 'aes', 'apic', 'avx1.0', 'clfsh', 'cmov', 'cx16', 'cx8',
-			'de', 'ds', 'dscpl', 'dtes64', 'em64t', 'est', 'fpu', 'fxsr',
-			'htt', 'lahf', 'mca', 'mce', 'mmx', 'mon', 'msr', 'mtrr',
-			'osxsave', 'pae', 'pat', 'pbe', 'pcid', 'pclmulqdq', 'pdcm',
-			'pge', 'popcnt', 'pse', 'pse36', 'rdtscp', 'sep', 'smx', 'ss',
-			'sse', 'sse2', 'sse3', 'sse4.1', 'sse4.2', 'ssse3', 'syscall',
-			'tm', 'tm2', 'tpr', 'tsc', 'tsci', 'tsctmr', 'vme', 'vmx',
-			'x2apic', 'xd', 'xsave']
-			,
-			info['flags']
+			[
+				'acpi',
+				'aes',
+				'apic',
+				'avx1.0',
+				'clfsh',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'ds',
+				'dscpl',
+				'dtes64',
+				'em64t',
+				'est',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'mca',
+				'mce',
+				'mmx',
+				'mon',
+				'msr',
+				'mtrr',
+				'osxsave',
+				'pae',
+				'pat',
+				'pbe',
+				'pcid',
+				'pclmulqdq',
+				'pdcm',
+				'pge',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'smx',
+				'ss',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'ssse3',
+				'syscall',
+				'tm',
+				'tm2',
+				'tpr',
+				'tsc',
+				'tsci',
+				'tsctmr',
+				'vme',
+				'vmx',
+				'x2apic',
+				'xd',
+				'xsave',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -162,14 +211,64 @@ class TestOSX_10_12(unittest.TestCase):
 		self.assertEqual(6, info['family'])
 
 		self.assertEqual(
-			['acpi', 'aes', 'apic', 'avx1.0', 'clfsh', 'cmov', 'cx16', 'cx8',
-			'de', 'ds', 'dscpl', 'dtes64', 'em64t', 'est', 'fpu', 'fxsr',
-			'htt', 'lahf', 'mca', 'mce', 'mmx', 'mon', 'msr', 'mtrr',
-			'osxsave', 'pae', 'pat', 'pbe', 'pcid', 'pclmulqdq', 'pdcm',
-			'pge', 'popcnt', 'pse', 'pse36', 'rdtscp', 'sep', 'smx', 'ss',
-			'sse', 'sse2', 'sse3', 'sse4.1', 'sse4.2', 'ssse3', 'syscall',
-			'tm', 'tm2', 'tpr', 'tsc', 'tsci', 'tsctmr', 'vme', 'vmx',
-			'x2apic', 'xd', 'xsave']
-			,
-			info['flags']
+			[
+				'acpi',
+				'aes',
+				'apic',
+				'avx1.0',
+				'clfsh',
+				'cmov',
+				'cx16',
+				'cx8',
+				'de',
+				'ds',
+				'dscpl',
+				'dtes64',
+				'em64t',
+				'est',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'mca',
+				'mce',
+				'mmx',
+				'mon',
+				'msr',
+				'mtrr',
+				'osxsave',
+				'pae',
+				'pat',
+				'pbe',
+				'pcid',
+				'pclmulqdq',
+				'pdcm',
+				'pge',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'smx',
+				'ss',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'ssse3',
+				'syscall',
+				'tm',
+				'tm2',
+				'tpr',
+				'tsc',
+				'tsci',
+				'tsctmr',
+				'vme',
+				'vmx',
+				'x2apic',
+				'xd',
+				'xsave',
+			],
+			info['flags'],
 		)

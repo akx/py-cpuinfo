@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -40,6 +39,7 @@ CPU: AMD Ryzen 7 2700X Eight-Core Processor          (3693.15-MHz K8-class CPU)
  '''
 		return retcode, output
 
+
 class TestTrueOS_18_X86_64_Ryzen7(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -51,6 +51,7 @@ class TestTrueOS_18_X86_64_Ryzen7(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -80,15 +81,57 @@ class TestTrueOS_18_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual(23, info['family'])
 
 		self.assertEqual(
-			['abm', 'aesni', 'apic', 'avx', 'cmov', 'cmp', 'cr8', 'cx16',
-			'cx8', 'de', 'ffxsr', 'fpu', 'fxsr', 'htt', 'lahf', 'lm', 'mas',
-			'mca', 'mce', 'mmx', 'mmx+', 'movbe', 'msr', 'mtrr', 'nx',
-			'osxsave', 'pae', 'pat', 'pclmulqdq', 'pge', 'popcnt', 'prefetch',
-			'pse', 'pse36', 'rdrand', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3',
-			'sse4.1', 'sse4.2', 'sse4a', 'ssse3', 'syscall', 'tsc', 'vme',
-			'xsave']
-			,
-			info['flags']
+			[
+				'abm',
+				'aesni',
+				'apic',
+				'avx',
+				'cmov',
+				'cmp',
+				'cr8',
+				'cx16',
+				'cx8',
+				'de',
+				'ffxsr',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'lm',
+				'mas',
+				'mca',
+				'mce',
+				'mmx',
+				'mmx+',
+				'movbe',
+				'msr',
+				'mtrr',
+				'nx',
+				'osxsave',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'popcnt',
+				'prefetch',
+				'pse',
+				'pse36',
+				'rdrand',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'sse4a',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -111,13 +154,55 @@ class TestTrueOS_18_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual(23, info['family'])
 
 		self.assertEqual(
-			['abm', 'aesni', 'apic', 'avx', 'cmov', 'cmp', 'cr8', 'cx16',
-			'cx8', 'de', 'ffxsr', 'fpu', 'fxsr', 'htt', 'lahf', 'lm', 'mas',
-			'mca', 'mce', 'mmx', 'mmx+', 'movbe', 'msr', 'mtrr', 'nx',
-			'osxsave', 'pae', 'pat', 'pclmulqdq', 'pge', 'popcnt', 'prefetch',
-			'pse', 'pse36', 'rdrand', 'rdtscp', 'sep', 'sse', 'sse2', 'sse3',
-			'sse4.1', 'sse4.2', 'sse4a', 'ssse3', 'syscall', 'tsc', 'vme',
-			'xsave']
-			,
-			info['flags']
+			[
+				'abm',
+				'aesni',
+				'apic',
+				'avx',
+				'cmov',
+				'cmp',
+				'cr8',
+				'cx16',
+				'cx8',
+				'de',
+				'ffxsr',
+				'fpu',
+				'fxsr',
+				'htt',
+				'lahf',
+				'lm',
+				'mas',
+				'mca',
+				'mce',
+				'mmx',
+				'mmx+',
+				'movbe',
+				'msr',
+				'mtrr',
+				'nx',
+				'osxsave',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'popcnt',
+				'prefetch',
+				'pse',
+				'pse36',
+				'rdrand',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'sse4.1',
+				'sse4.2',
+				'sse4a',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+			],
+			info['flags'],
 		)

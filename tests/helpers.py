@@ -25,7 +25,6 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
 class EmptyDataSource:
 	@staticmethod
 	def has_proc_cpuinfo():
@@ -75,6 +74,7 @@ class EmptyDataSource:
 	def has_sysinfo():
 		return False
 
+
 def get_os_type():
 	import platform
 
@@ -106,6 +106,7 @@ def monkey_patch_data_source(cpuinfo, NewDataSource):
 
 	# Copy any methods that are the same over
 	_actual_monkey_patch_data_source(cpuinfo, NewDataSource)
+
 
 def _actual_monkey_patch_data_source(cpuinfo, NewDataSource):
 	if hasattr(NewDataSource, 'bits'):
@@ -156,7 +157,9 @@ def _actual_monkey_patch_data_source(cpuinfo, NewDataSource):
 	if hasattr(NewDataSource, 'cat_var_run_dmesg_boot'):
 		cpuinfo.DataSource.cat_var_run_dmesg_boot = staticmethod(NewDataSource.cat_var_run_dmesg_boot)
 	if hasattr(NewDataSource, 'sysctl_machdep_cpu_hw_cpufrequency'):
-		cpuinfo.DataSource.sysctl_machdep_cpu_hw_cpufrequency = staticmethod(NewDataSource.sysctl_machdep_cpu_hw_cpufrequency)
+		cpuinfo.DataSource.sysctl_machdep_cpu_hw_cpufrequency = staticmethod(
+			NewDataSource.sysctl_machdep_cpu_hw_cpufrequency
+		)
 	if hasattr(NewDataSource, 'isainfo_vb'):
 		cpuinfo.DataSource.isainfo_vb = staticmethod(NewDataSource.isainfo_vb)
 	if hasattr(NewDataSource, 'kstat_m_cpu_info'):
@@ -179,6 +182,7 @@ def _actual_monkey_patch_data_source(cpuinfo, NewDataSource):
 		cpuinfo.DataSource.winreg_hz_actual = staticmethod(NewDataSource.winreg_hz_actual)
 	if hasattr(NewDataSource, 'winreg_feature_bits'):
 		cpuinfo.DataSource.winreg_feature_bits = staticmethod(NewDataSource.winreg_feature_bits)
+
 
 def backup_data_source(cpuinfo):
 	BackupDataSource = type('BackupDataSource', (object,), {})
@@ -207,7 +211,9 @@ def backup_data_source(cpuinfo):
 	cpuinfo.BackupDataSource.sestatus_b = staticmethod(cpuinfo.DataSource.sestatus_b)
 	cpuinfo.BackupDataSource.dmesg_a = staticmethod(cpuinfo.DataSource.dmesg_a)
 	cpuinfo.BackupDataSource.cat_var_run_dmesg_boot = staticmethod(cpuinfo.DataSource.cat_var_run_dmesg_boot)
-	cpuinfo.BackupDataSource.sysctl_machdep_cpu_hw_cpufrequency = staticmethod(cpuinfo.DataSource.sysctl_machdep_cpu_hw_cpufrequency)
+	cpuinfo.BackupDataSource.sysctl_machdep_cpu_hw_cpufrequency = staticmethod(
+		cpuinfo.DataSource.sysctl_machdep_cpu_hw_cpufrequency
+	)
 	cpuinfo.BackupDataSource.isainfo_vb = staticmethod(cpuinfo.DataSource.isainfo_vb)
 	cpuinfo.BackupDataSource.kstat_m_cpu_info = staticmethod(cpuinfo.DataSource.kstat_m_cpu_info)
 	cpuinfo.BackupDataSource.lscpu = staticmethod(cpuinfo.DataSource.lscpu)
@@ -219,6 +225,7 @@ def backup_data_source(cpuinfo):
 	cpuinfo.BackupDataSource.winreg_arch_string_raw = staticmethod(cpuinfo.DataSource.winreg_arch_string_raw)
 	cpuinfo.BackupDataSource.winreg_hz_actual = staticmethod(cpuinfo.DataSource.winreg_hz_actual)
 	cpuinfo.BackupDataSource.winreg_feature_bits = staticmethod(cpuinfo.DataSource.winreg_feature_bits)
+
 
 def restore_data_source(cpuinfo):
 	cpuinfo.DataSource.bits = cpuinfo.BackupDataSource.bits
@@ -258,11 +265,13 @@ def restore_data_source(cpuinfo):
 	cpuinfo.DataSource.winreg_hz_actual = cpuinfo.BackupDataSource.winreg_hz_actual
 	cpuinfo.DataSource.winreg_feature_bits = cpuinfo.BackupDataSource.winreg_feature_bits
 
+
 def backup_cpuid(cpuinfo):
 	BackupCPUID = type('BackupCPUID', (object,), {})
 	cpuinfo.BackupCPUID = BackupCPUID()
 	cpuinfo.BackupCPUID._run_asm = cpuinfo.CPUID._run_asm
 	cpuinfo.BackupCPUID._asm_func = cpuinfo.CPUID._asm_func
+
 
 def monkey_patch_cpuid(cpuinfo, return_hz, return_values):
 	class MockCPUID:
@@ -295,6 +304,7 @@ def monkey_patch_cpuid(cpuinfo, return_hz, return_values):
 	cpuinfo.CPUID._run_asm = MockCPUID.__dict__['_run_asm']
 	cpuinfo.CPUID._asm_func = MockCPUID.__dict__['_asm_func']
 
+
 def restore_cpuid(cpuinfo):
 	cpuinfo.CPUID._run_asm = cpuinfo.BackupCPUID._run_asm
 	cpuinfo.CPUID._asm_func = cpuinfo.BackupCPUID._asm_func
@@ -307,10 +317,12 @@ def backup_asm(cpuinfo):
 	cpuinfo.BackupASM.run = cpuinfo.ASM.run
 	cpuinfo.BackupASM.free = cpuinfo.ASM.free
 
+
 def monkey_patch_asm(cpuinfo, NewASM):
 	cpuinfo.ASM.compile = NewASM.__dict__['compile']
 	cpuinfo.ASM.run = NewASM.__dict__['run']
 	cpuinfo.ASM.free = NewASM.__dict__['free']
+
 
 def restore_asm(cpuinfo):
 	cpuinfo.ASM.compile = cpuinfo.BackupASM.compile

@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -453,6 +452,7 @@ class TestLinuxGentoo_2_2_X86_64(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -487,14 +487,51 @@ class TestLinuxGentoo_2_2_X86_64(unittest.TestCase):
 		self.assertEqual(3072 * 1024, info['l3_cache_size'])
 
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'constant_tsc', 'cx16', 'cx8', 'de',
-			'fpu', 'fxsr', 'ht', 'hypervisor', 'lahf_lm', 'lm', 'mca', 'mce',
-			'mmx', 'msr', 'mtrr', 'nonstop_tsc', 'nopl', 'nx', 'pae', 'pat',
-			'pclmulqdq', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'rdtscp',
-			'rep_good', 'sep', 'sse', 'sse2', 'sse4_1', 'sse4_2', 'ssse3',
-			'syscall', 'tsc', 'vme', 'xsave', 'xtopology']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'constant_tsc',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'ht',
+				'hypervisor',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nonstop_tsc',
+				'nopl',
+				'nx',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'rep_good',
+				'sep',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+				'xtopology',
+			],
+			info['flags'],
 		)
 
 	def test_get_cpu_info_from_dmesg(self):
@@ -526,14 +563,51 @@ class TestLinuxGentoo_2_2_X86_64(unittest.TestCase):
 		self.assertEqual(42, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'constant_tsc', 'cx16', 'cx8', 'de',
-			'fpu', 'fxsr', 'ht', 'hypervisor', 'lahf_lm', 'lm', 'mca', 'mce',
-			'mmx', 'msr', 'mtrr', 'nonstop_tsc', 'nopl', 'nx', 'pae', 'pat',
-			'pclmulqdq', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'rdtscp',
-			'rep_good', 'sep', 'sse', 'sse2', 'sse4_1', 'sse4_2', 'ssse3',
-			'syscall', 'tsc', 'vme', 'xsave', 'xtopology']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'constant_tsc',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'ht',
+				'hypervisor',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nonstop_tsc',
+				'nopl',
+				'nx',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'rep_good',
+				'sep',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+				'xtopology',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -560,12 +634,49 @@ class TestLinuxGentoo_2_2_X86_64(unittest.TestCase):
 		self.assertEqual(42, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'clflush', 'cmov', 'constant_tsc', 'cx16', 'cx8', 'de',
-			'fpu', 'fxsr', 'ht', 'hypervisor', 'lahf_lm', 'lm', 'mca', 'mce',
-			'mmx', 'msr', 'mtrr', 'nonstop_tsc', 'nopl', 'nx', 'pae', 'pat',
-			'pclmulqdq', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'rdtscp',
-			'rep_good', 'sep', 'sse', 'sse2', 'sse4_1', 'sse4_2', 'ssse3',
-			'syscall', 'tsc', 'vme', 'xsave', 'xtopology']
-			,
-			info['flags']
+			[
+				'apic',
+				'clflush',
+				'cmov',
+				'constant_tsc',
+				'cx16',
+				'cx8',
+				'de',
+				'fpu',
+				'fxsr',
+				'ht',
+				'hypervisor',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'nonstop_tsc',
+				'nopl',
+				'nx',
+				'pae',
+				'pat',
+				'pclmulqdq',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'rep_good',
+				'sep',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'ssse3',
+				'syscall',
+				'tsc',
+				'vme',
+				'xsave',
+				'xtopology',
+			],
+			info['flags'],
 		)

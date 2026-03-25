@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -50,8 +49,6 @@ CPU #0: "Intel(R) Core(TM) i7 CPU         870  @ 2.93GHz"
 		return returncode, output
 
 
-
-
 class TestHaiku_x86_32(unittest.TestCase):
 	def setUp(self):
 		helpers.backup_data_source(cpuinfo)
@@ -63,6 +60,7 @@ class TestHaiku_x86_32(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -90,11 +88,34 @@ class TestHaiku_x86_32(unittest.TestCase):
 		self.assertEqual(30, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'cflush', 'cmov', 'cx8', 'de', 'fpu', 'fxstr', 'htt',
-			'mca', 'mce', 'mmx', 'msr', 'mtrr', 'pat', 'pge', 'pse', 'pse36',
-			'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'ssse3', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'cflush',
+				'cmov',
+				'cx8',
+				'de',
+				'fpu',
+				'fxstr',
+				'htt',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -115,9 +136,32 @@ class TestHaiku_x86_32(unittest.TestCase):
 		self.assertEqual(30, info['model'])
 		self.assertEqual(6, info['family'])
 		self.assertEqual(
-			['apic', 'cflush', 'cmov', 'cx8', 'de', 'fpu', 'fxstr', 'htt',
-			'mca', 'mce', 'mmx', 'msr', 'mtrr', 'pat', 'pge', 'pse', 'pse36',
-			'rdtscp', 'sep', 'sse', 'sse2', 'sse3', 'ssse3', 'tsc', 'vme']
-			,
-			info['flags']
+			[
+				'apic',
+				'cflush',
+				'cmov',
+				'cx8',
+				'de',
+				'fpu',
+				'fxstr',
+				'htt',
+				'mca',
+				'mce',
+				'mmx',
+				'msr',
+				'mtrr',
+				'pat',
+				'pge',
+				'pse',
+				'pse36',
+				'rdtscp',
+				'sep',
+				'sse',
+				'sse2',
+				'sse3',
+				'ssse3',
+				'tsc',
+				'vme',
+			],
+			info['flags'],
 		)

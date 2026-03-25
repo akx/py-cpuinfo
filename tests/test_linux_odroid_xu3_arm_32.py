@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -253,6 +252,7 @@ class TestLinux_Odroid_XU3_arm_32(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(4, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -291,9 +291,8 @@ class TestLinux_Odroid_XU3_arm_32(unittest.TestCase):
 		self.assertEqual('ODROID-XU3', info['hardware_raw'])
 
 		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'idiva', 'idivt', 'neon', 'swp',
-			'thumb', 'tls', 'vfp', 'vfpv3', 'vfpv4' ],
-			info['flags']
+			['edsp', 'fastmult', 'half', 'idiva', 'idivt', 'neon', 'swp', 'thumb', 'tls', 'vfp', 'vfpv3', 'vfpv4'],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -312,7 +311,6 @@ class TestLinux_Odroid_XU3_arm_32(unittest.TestCase):
 		self.assertEqual('armv7l', info['arch_string_raw'])
 
 		self.assertEqual(
-			['edsp', 'fastmult', 'half', 'idiva', 'idivt', 'neon', 'swp',
-			'thumb', 'tls', 'vfp', 'vfpv3', 'vfpv4' ],
-			info['flags']
+			['edsp', 'fastmult', 'half', 'idiva', 'idivt', 'neon', 'swp', 'thumb', 'tls', 'vfp', 'vfpv3', 'vfpv4'],
+			info['flags'],
 		)

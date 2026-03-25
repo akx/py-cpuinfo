@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -420,6 +419,7 @@ class TestLinuxDebian_8_7_1_ppc64le(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
@@ -444,8 +444,7 @@ class TestLinuxDebian_8_7_1_ppc64le(unittest.TestCase):
 	def test_get_cpu_info_from_ibm_pa_features(self):
 		info = cpuinfo._get_cpu_info_from_ibm_pa_features()
 		self.assertEqual(
-			['dabr', 'dabrx', 'dsisr', 'fpu', 'lp', 'mmu', 'pp', 'rislb', 'run', 'slb', 'sprg3'],
-			info['flags']
+			['dabr', 'dabrx', 'dsisr', 'fpu', 'lp', 'mmu', 'pp', 'rislb', 'run', 'slb', 'sprg3'], info['flags']
 		)
 
 	def test_get_cpu_info_from_proc_cpuinfo(self):
@@ -472,6 +471,5 @@ class TestLinuxDebian_8_7_1_ppc64le(unittest.TestCase):
 		self.assertEqual(32 * 1024, info['l1_data_cache_size'])
 		self.assertEqual('ppc64le', info['arch_string_raw'])
 		self.assertEqual(
-			['dabr', 'dabrx', 'dsisr', 'fpu', 'lp', 'mmu', 'pp', 'rislb', 'run', 'slb', 'sprg3'],
-			info['flags']
+			['dabr', 'dabrx', 'dsisr', 'fpu', 'lp', 'mmu', 'pp', 'rislb', 'run', 'slb', 'sprg3'], info['flags']
 		)

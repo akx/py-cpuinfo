@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -89,6 +88,7 @@ Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca 
 
 '''
 		return returncode, output
+
 
 # Confirms fix for: https://github.com/workhorsy/py-cpuinfo/issues/152
 # CPU stepping, model, and family values are blank if 0

@@ -1,6 +1,5 @@
-
-
 import unittest
+
 from cpuinfo import cpuinfo
 from tests import helpers
 
@@ -34,8 +33,6 @@ class MockDataSource:
 		return 1010515455
 
 
-
-
 class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 	def setUp(self):
 		cpuinfo.CAN_CALL_CPUID_IN_SUBPROCESS = False
@@ -43,24 +40,42 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 		helpers.monkey_patch_data_source(cpuinfo, MockDataSource)
 
 		helpers.backup_cpuid(cpuinfo)
-		helpers.monkey_patch_cpuid(cpuinfo, 3693000000, [
-			# get_max_extension_support
-			0x8000001f,
-			# get_cache
-			0x2006140,
-			# get_info
-			0x800f82,
-			# get_processor_brand
-			0x20444d41, 0x657a7952, 0x2037206e,
-			0x30303732, 0x69452058, 0x2d746867,
-			0x65726f43, 0x6f725020, 0x73736563,
-			0x2020726f, 0x20202020, 0x202020,
-			# get_vendor_id
-			0x68747541, 0x444d4163, 0x69746e65,
-			# get_flags
-			0x178bfbff, 0x7ed8320b, 0x209c01a9,
-			0x0, 0x20000000, 0x35c233ff,
-		])
+		helpers.monkey_patch_cpuid(
+			cpuinfo,
+			3693000000,
+			[
+				# get_max_extension_support
+				0x8000001F,
+				# get_cache
+				0x2006140,
+				# get_info
+				0x800F82,
+				# get_processor_brand
+				0x20444D41,
+				0x657A7952,
+				0x2037206E,
+				0x30303732,
+				0x69452058,
+				0x2D746867,
+				0x65726F43,
+				0x6F725020,
+				0x73736563,
+				0x2020726F,
+				0x20202020,
+				0x202020,
+				# get_vendor_id
+				0x68747541,
+				0x444D4163,
+				0x69746E65,
+				# get_flags
+				0x178BFBFF,
+				0x7ED8320B,
+				0x209C01A9,
+				0x0,
+				0x20000000,
+				0x35C233FF,
+			],
+		)
 
 	def tearDown(self):
 		helpers.restore_data_source(cpuinfo)
@@ -70,8 +85,9 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 	'''
 	Make sure calls return the expected number of fields.
 	'''
+
 	def test_returns(self):
-		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_wmic()));
+		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_wmic()))
 		self.assertEqual(7, len(cpuinfo._get_cpu_info_from_registry()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_cpufreq_info()))
 		self.assertEqual(0, len(cpuinfo._get_cpu_info_from_lscpu()))
@@ -86,15 +102,14 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual(3, len(cpuinfo._get_cpu_info_from_platform_uname()))
 		self.assertEqual(20, len(cpuinfo._get_cpu_info_internal()))
 
-
 	def test_get_cpu_info_from_cpuid(self):
 		info = cpuinfo._get_cpu_info_from_cpuid()
 
 		self.assertEqual('AuthenticAMD', info['vendor_id_raw'])
 		self.assertEqual('AMD Ryzen 7 2700X Eight-Core Processor', info['brand_raw'])
-		#self.assertEqual('3.6930 GHz', info['hz_advertised_friendly'])
+		# self.assertEqual('3.6930 GHz', info['hz_advertised_friendly'])
 		self.assertEqual('3.6930 GHz', info['hz_actual_friendly'])
-		#self.assertEqual((3693000000, 0), info['hz_advertised'])
+		# self.assertEqual((3693000000, 0), info['hz_advertised'])
 		self.assertEqual((3693000000, 0), info['hz_actual'])
 
 		self.assertEqual(2, info['stepping'])
@@ -106,18 +121,76 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual(6, info['l2_cache_associativity'])
 
 		self.assertEqual(
-			['3dnowprefetch', 'abm', 'adx', 'aes', 'apic', 'avx', 'avx2',
-			'bmi1', 'bmi2', 'clflush', 'clflushopt', 'cmov', 'cmp_legacy',
-			'cr8_legacy', 'cx16', 'cx8', 'dbx', 'de', 'extapic', 'f16c',
-			'fma', 'fpu', 'fxsr', 'ht', 'lahf_lm', 'lm', 'mca', 'mce',
-			'misalignsse', 'mmx', 'monitor', 'movbe', 'msr', 'mtrr', 'osvw',
-			'osxsave', 'pae', 'pat', 'pci_l2i', 'pclmulqdq', 'perfctr_core',
-			'perfctr_nb', 'pge', 'pni', 'popcnt', 'pse', 'pse36', 'rdrnd',
-			'rdseed', 'sep', 'sha', 'skinit', 'smap', 'smep', 'sse', 'sse2',
-			'sse4_1', 'sse4_2', 'sse4a', 'ssse3', 'svm', 'tce', 'topoext',
-			'tsc', 'vme', 'wdt', 'xsave']
-			,
-			info['flags']
+			[
+				'3dnowprefetch',
+				'abm',
+				'adx',
+				'aes',
+				'apic',
+				'avx',
+				'avx2',
+				'bmi1',
+				'bmi2',
+				'clflush',
+				'clflushopt',
+				'cmov',
+				'cmp_legacy',
+				'cr8_legacy',
+				'cx16',
+				'cx8',
+				'dbx',
+				'de',
+				'extapic',
+				'f16c',
+				'fma',
+				'fpu',
+				'fxsr',
+				'ht',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'misalignsse',
+				'mmx',
+				'monitor',
+				'movbe',
+				'msr',
+				'mtrr',
+				'osvw',
+				'osxsave',
+				'pae',
+				'pat',
+				'pci_l2i',
+				'pclmulqdq',
+				'perfctr_core',
+				'perfctr_nb',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdrnd',
+				'rdseed',
+				'sep',
+				'sha',
+				'skinit',
+				'smap',
+				'smep',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'sse4a',
+				'ssse3',
+				'svm',
+				'tce',
+				'topoext',
+				'tsc',
+				'vme',
+				'wdt',
+				'xsave',
+			],
+			info['flags'],
 		)
 
 	def test_get_cpu_info_from_platform_uname(self):
@@ -138,11 +211,29 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual((3693000000, 0), info['hz_actual'])
 
 		self.assertEqual(
-			['3dnow', 'clflush', 'cmov', 'de', 'dts', 'fxsr', 'ia64', 'mca',
-			'mmx', 'msr', 'mtrr', 'pse', 'sep', 'sepamd', 'serial', 'ss',
-			'sse', 'sse2', 'tm', 'tsc']
-			,
-			info['flags']
+			[
+				'3dnow',
+				'clflush',
+				'cmov',
+				'de',
+				'dts',
+				'fxsr',
+				'ia64',
+				'mca',
+				'mmx',
+				'msr',
+				'mtrr',
+				'pse',
+				'sep',
+				'sepamd',
+				'serial',
+				'ss',
+				'sse',
+				'sse2',
+				'tm',
+				'tsc',
+			],
+			info['flags'],
 		)
 
 	def test_all(self):
@@ -169,17 +260,81 @@ class TestWindows_10_X86_64_Ryzen7(unittest.TestCase):
 		self.assertEqual(512, info['l2_cache_line_size'])
 
 		self.assertEqual(
-			['3dnow', '3dnowprefetch', 'abm', 'adx', 'aes', 'apic', 'avx',
-			'avx2', 'bmi1', 'bmi2', 'clflush', 'clflushopt', 'cmov',
-			'cmp_legacy', 'cr8_legacy', 'cx16', 'cx8', 'dbx', 'de', 'dts',
-			'extapic', 'f16c', 'fma', 'fpu', 'fxsr', 'ht', 'ia64', 'lahf_lm',
-			'lm', 'mca', 'mce', 'misalignsse', 'mmx', 'monitor', 'movbe',
-			'msr', 'mtrr', 'osvw', 'osxsave', 'pae', 'pat', 'pci_l2i',
-			'pclmulqdq', 'perfctr_core', 'perfctr_nb', 'pge', 'pni',
-			'popcnt', 'pse', 'pse36', 'rdrnd', 'rdseed', 'sep', 'sepamd',
-			'serial', 'sha', 'skinit', 'smap', 'smep', 'ss', 'sse', 'sse2',
-			'sse4_1', 'sse4_2', 'sse4a', 'ssse3', 'svm', 'tce', 'tm',
-			'topoext', 'tsc', 'vme', 'wdt', 'xsave']
-			,
-			info['flags']
+			[
+				'3dnow',
+				'3dnowprefetch',
+				'abm',
+				'adx',
+				'aes',
+				'apic',
+				'avx',
+				'avx2',
+				'bmi1',
+				'bmi2',
+				'clflush',
+				'clflushopt',
+				'cmov',
+				'cmp_legacy',
+				'cr8_legacy',
+				'cx16',
+				'cx8',
+				'dbx',
+				'de',
+				'dts',
+				'extapic',
+				'f16c',
+				'fma',
+				'fpu',
+				'fxsr',
+				'ht',
+				'ia64',
+				'lahf_lm',
+				'lm',
+				'mca',
+				'mce',
+				'misalignsse',
+				'mmx',
+				'monitor',
+				'movbe',
+				'msr',
+				'mtrr',
+				'osvw',
+				'osxsave',
+				'pae',
+				'pat',
+				'pci_l2i',
+				'pclmulqdq',
+				'perfctr_core',
+				'perfctr_nb',
+				'pge',
+				'pni',
+				'popcnt',
+				'pse',
+				'pse36',
+				'rdrnd',
+				'rdseed',
+				'sep',
+				'sepamd',
+				'serial',
+				'sha',
+				'skinit',
+				'smap',
+				'smep',
+				'ss',
+				'sse',
+				'sse2',
+				'sse4_1',
+				'sse4_2',
+				'sse4a',
+				'ssse3',
+				'svm',
+				'tce',
+				'tm',
+				'topoext',
+				'tsc',
+				'vme',
+				'wdt',
+				'xsave',
+			],
+			info['flags'],
 		)
