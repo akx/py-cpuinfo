@@ -286,29 +286,12 @@ def _program_paths(program_name):
 				paths.append(pext)
 	return paths
 
-def _run_and_get_stdout(command, pipe_command=None):
-	g_trace.command_header('Running command "' + ' '.join(command) + '" ...')
-
-	# Run the command normally
-	if not pipe_command:
-		p1 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-	# Run the command and pipe it into another command
-	else:
-		p2 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-		p1 = subprocess.Popen(pipe_command, stdin=p2.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		p2.stdout.close()
-
-	# Get the stdout and stderr
-	stdout_output, stderr_output = p1.communicate()
-	stdout_output = stdout_output.decode(encoding='UTF-8')
-	stderr_output = stderr_output.decode(encoding='UTF-8')
-
-	# Send the result to the logger
-	g_trace.command_output('return code:', str(p1.returncode))
-	g_trace.command_output('stdout:', stdout_output)
-
-	# Return the return code and stdout
-	return p1.returncode, stdout_output
+def _run_and_get_stdout(command):
+	g_trace.command_header(f'Running command {command}')
+	result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, text=True)
+	g_trace.command_output('return code:', str(result.returncode))
+	g_trace.command_output('stdout:', result.stdout)
+	return result.returncode, result.stdout
 
 def _read_windows_registry_key(key_name, field_name):
 	g_trace.command_header('Reading Registry key "{0}" field "{1}" ...'.format(key_name, field_name))
