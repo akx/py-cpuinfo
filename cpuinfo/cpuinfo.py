@@ -4,7 +4,6 @@
 
 import ctypes
 import datetime
-import inspect
 import io
 import os
 import platform
@@ -18,11 +17,9 @@ CPUINFO_VERSION = (10, 0, 0)
 CPUINFO_VERSION_STRING = '.'.join([str(n) for n in CPUINFO_VERSION])
 CAN_CALL_CPUID_IN_SUBPROCESS = True
 
-g_trace = None
-
 
 class Trace:
-	def __init__(self, is_active, is_stored_in_string):
+	def __init__(self, is_active, is_stored_in_string=False):
 		self._is_active = is_active
 		if not self._is_active:
 			return
@@ -37,21 +34,27 @@ class Trace:
 		self._stderr = io.StringIO()
 		self._err = None
 
+	@staticmethod
+	def _caller_location(depth):
+		try:
+			frame = sys._getframe(depth + 1)  # +1 for this method itself
+			return frame.f_code.co_filename, frame.f_lineno
+		except Exception:
+			import inspect
+			frame = inspect.stack()[depth + 1]
+			return frame[1], frame[2]
+
 	def header(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 		self._output.write("{0} ({1} {2})\n".format(msg, file, line))
 		self._output.flush()
 
 	def success(self):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 
 		self._output.write("Success ... ({0} {1})\n\n".format(file, line))
 		self._output.flush()
@@ -59,9 +62,7 @@ class Trace:
 	def fail(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 
 		if isinstance(msg, str):
 			msg = ''.join(['\t' + line for line in msg.split('\n')]) + '\n'
@@ -78,9 +79,7 @@ class Trace:
 	def command_header(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[3]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(3)
 		self._output.write("\t{0} ({1} {2})\n".format(msg, file, line))
 		self._output.flush()
 
@@ -94,9 +93,7 @@ class Trace:
 	def keys(self, keys, info, new_info):
 		if not self._is_active: return
 
-		frame = inspect.stack()[2]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(2)
 
 		# List updated keys
 		self._output.write("\tChanged keys ({0} {1})\n".format(file, line))
@@ -134,6 +131,8 @@ class Trace:
 		'err' : self._err,
 		'is_fail' : is_fail
 		}
+
+g_trace = Trace(is_active=False)
 
 class DataSource:
 	bits = platform.architecture()[0]
@@ -197,7 +196,7 @@ class DataSource:
 
 	@staticmethod
 	def cat_proc_cpuinfo():
-		return _run_and_get_stdout(['cat', '/proc/cpuinfo'])
+		return _read_file('/proc/cpuinfo')
 
 	@staticmethod
 	def cpufreq_info():
@@ -213,7 +212,7 @@ class DataSource:
 
 	@staticmethod
 	def cat_var_run_dmesg_boot():
-		return _run_and_get_stdout(['cat', '/var/run/dmesg.boot'])
+		return _read_file('/var/run/dmesg.boot')
 
 	@staticmethod
 	def sysctl_machdep_cpu_hw_cpufrequency():
@@ -287,29 +286,23 @@ def _program_paths(program_name):
 				paths.append(pext)
 	return paths
 
-def _run_and_get_stdout(command, pipe_command=None):
-	g_trace.command_header('Running command "' + ' '.join(command) + '" ...')
+def _run_and_get_stdout(command):
+	g_trace.command_header(f'Running command {command}')
+	result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, text=True)
+	g_trace.command_output('return code:', str(result.returncode))
+	g_trace.command_output('stdout:', result.stdout)
+	return result.returncode, result.stdout
 
-	# Run the command normally
-	if not pipe_command:
-		p1 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-	# Run the command and pipe it into another command
-	else:
-		p2 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-		p1 = subprocess.Popen(pipe_command, stdin=p2.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		p2.stdout.close()
-
-	# Get the stdout and stderr
-	stdout_output, stderr_output = p1.communicate()
-	stdout_output = stdout_output.decode(encoding='UTF-8')
-	stderr_output = stderr_output.decode(encoding='UTF-8')
-
-	# Send the result to the logger
-	g_trace.command_output('return code:', str(p1.returncode))
-	g_trace.command_output('stdout:', stdout_output)
-
-	# Return the return code and stdout
-	return p1.returncode, stdout_output
+def _read_file(path):
+	g_trace.command_header(f'Reading file {path}')
+	try:
+		with open(path, 'r', encoding='UTF-8', errors='replace') as f:
+			content = f.read()
+		g_trace.command_output('length:', str(len(content)))
+		return 0, content
+	except Exception as e:
+		g_trace.command_output('error:', str(e))
+		return 1, ''
 
 def _read_windows_registry_key(key_name, field_name):
 	g_trace.command_header('Reading Registry key "{0}" field "{1}" ...'.format(key_name, field_name))
@@ -2569,6 +2562,7 @@ def _get_cpu_info_internal():
 	Returns the CPU info by using the best sources of information for your OS.
 	Returns {} if nothing is found.
 	'''
+	_check_arch()
 
 	g_trace.write('!' * 80)
 
@@ -2661,6 +2655,3 @@ def _configure_trace(is_active):
 	global g_trace
 	g_trace = Trace(is_active, False)
 
-if __name__ != '__main__':
-	_configure_trace(False)
-	_check_arch()
