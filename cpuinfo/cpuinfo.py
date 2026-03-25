@@ -1628,14 +1628,7 @@ def _get_cpu_info_from_cpuid():
 
 			return output['info']
 		else:
-			orig_stdout = sys.stdout
-			orig_stderr = sys.stderr
-
 			output = _get_cpu_info_from_cpuid_actual()
-
-			sys.stdout = orig_stdout
-			sys.stderr = orig_stderr
-
 			g_trace.success()
 			return output['info']
 	except Exception as err:
