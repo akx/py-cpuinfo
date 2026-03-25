@@ -629,7 +629,7 @@ def _parse_dmesg_output(output):
 		best_string = None
 		highest_count = 0
 		for cpu_string in cpu_strings:
-			count = sum([n is not None for n in cpu_string])
+			count = sum(n is not None for n in cpu_string)
 			if count > highest_count:
 				highest_count = count
 				best_string = cpu_string
@@ -648,8 +648,7 @@ def _parse_dmesg_output(output):
 			fields = [{n[0].strip().lower() : n[1].strip()} for n in fields]
 
 			for field in fields:
-				name = list(field.keys())[0]
-				value = list(field.values())[0]
+				(name, value), = field.items()
 
 				if name == 'origin':
 					vendor_id = value.strip('"')
@@ -669,8 +668,7 @@ def _parse_dmesg_output(output):
 		flags = []
 		for line in flag_lines:
 			line = line.split('<')[1].split('>')[0].lower()
-			for flag in line.split(','):
-				flags.append(flag)
+			flags.extend(line.split(','))
 		flags.sort()
 
 		# Convert from GHz/MHz string to Hz
@@ -1902,8 +1900,8 @@ def _get_cpu_info_from_ibm_pa_features():
 
 		# Filter out invalid characters from output
 		value = output.split("ibm,pa-features")[1].lower()
-		value = [s for s in value if s in list('0123456789abcfed')]
-		value = ''.join(value)
+		_hex_chars = frozenset('0123456789abcdef')
+		value = ''.join(s for s in value if s in _hex_chars)
 
 		# Get data converted to Uint32 chunks
 		left = int(value[0 : 8], 16)
