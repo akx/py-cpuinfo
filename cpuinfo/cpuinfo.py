@@ -4,7 +4,6 @@
 
 import ctypes
 import datetime
-import inspect
 import io
 import os
 import platform
@@ -37,21 +36,27 @@ class Trace:
 		self._stderr = io.StringIO()
 		self._err = None
 
+	@staticmethod
+	def _caller_location(depth):
+		try:
+			frame = sys._getframe(depth + 1)  # +1 for this method itself
+			return frame.f_code.co_filename, frame.f_lineno
+		except Exception:
+			import inspect
+			frame = inspect.stack()[depth + 1]
+			return frame[1], frame[2]
+
 	def header(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 		self._output.write("{0} ({1} {2})\n".format(msg, file, line))
 		self._output.flush()
 
 	def success(self):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 
 		self._output.write("Success ... ({0} {1})\n\n".format(file, line))
 		self._output.flush()
@@ -59,9 +64,7 @@ class Trace:
 	def fail(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[1]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(1)
 
 		if isinstance(msg, str):
 			msg = ''.join(['\t' + line for line in msg.split('\n')]) + '\n'
@@ -78,9 +81,7 @@ class Trace:
 	def command_header(self, msg):
 		if not self._is_active: return
 
-		frame = inspect.stack()[3]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(3)
 		self._output.write("\t{0} ({1} {2})\n".format(msg, file, line))
 		self._output.flush()
 
@@ -94,9 +95,7 @@ class Trace:
 	def keys(self, keys, info, new_info):
 		if not self._is_active: return
 
-		frame = inspect.stack()[2]
-		file = frame[1]
-		line = frame[2]
+		file, line = self._caller_location(2)
 
 		# List updated keys
 		self._output.write("\tChanged keys ({0} {1})\n".format(file, line))
