@@ -1,10 +1,11 @@
-py-cpuinfo
-==========
+py-cpuinfo2
+===========
 
-[![Latest Version](https://img.shields.io/pypi/v/py-cpuinfo.svg)](https://pypi.org/project/py-cpuinfo/)
-[![License](https://img.shields.io/pypi/l/py-cpuinfo.svg)](https://github.com/workhorsy/py-cpuinfo/blob/master/LICENSE)
-[![Python Version](https://img.shields.io/pypi/pyversions/py-cpuinfo.svg)](https://pypi.org/project/py-cpuinfo/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/py-cpuinfo)](https://pypi.org/project/py-cpuinfo/)
+> **This is a friendly drop-in fork of [py-cpuinfo](https://github.com/workhorsy/py-cpuinfo)**.
+
+[![Latest Version](https://img.shields.io/pypi/v/py-cpuinfo2.svg)](https://pypi.org/project/py-cpuinfo2/)
+[![License](https://img.shields.io/pypi/l/py-cpuinfo2.svg)](https://github.com/akx/py-cpuinfo2/blob/master/LICENSE)
+[![Python Version](https://img.shields.io/pypi/pyversions/py-cpuinfo2.svg)](https://pypi.org/project/py-cpuinfo2/)
 
 Py-cpuinfo gets CPU info with pure Python. Py-cpuinfo should work without any
 extra programs or libraries, beyond what your OS provides. It does not require
@@ -167,25 +168,3 @@ These approaches are used for getting info:
 9. sysinfo (Haiku)
 10. device-tree ibm features flags (Linux PPC)
 11. Querying the CPUID register (Intel X86 CPUs)
-
-
-Run Test Suite
------
-
-~~~bash
-python test_suite.py
-~~~
-
-
-Bugs and Corrections
------
-
-Please report a Bug if you suspect any of this information is wrong.
-
-If py-cpuinfo does not work on your machine, run the script:
-
-~~~bash
-python tools/get_system_info.py
-~~~
-
-and create bug report with the generated "system_info.txt" file.
