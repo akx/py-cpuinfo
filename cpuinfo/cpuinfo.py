@@ -312,16 +312,20 @@ def _read_windows_registry_key(key_name, field_name):
 # Make sure we are running on a supported system
 def _check_arch():
 	arch, bits = _parse_arch(DataSource.arch_string_raw)
-	if arch not in ['ARM_7', 'ARM_8',
-	                'LOONG_32', 'LOONG_64',
-	                'MIPS_32', 'MIPS_64',
-	                'PPC_32', 'PPC_64',
-	                'RISCV_32', 'RISCV_64',
-	                'SPARC_32', 'SPARC_64',
-	                'S390X',
-	                'X86_32', 'X86_64']:
-		raise Exception("py-cpuinfo currently only works on X86 "
-		                "and some ARM/LoongArch/MIPS/PPC/RISCV/SPARC/S390X CPUs.")
+	if arch not in [
+		'ARM_7', 'ARM_8',
+		'LOONG_32', 'LOONG_64',
+		'MIPS_32', 'MIPS_64',
+		'PPC_32', 'PPC_64',
+		'RISCV_32', 'RISCV_64',
+		'SPARC_32', 'SPARC_64',
+		'S390X',
+		'X86_32', 'X86_64',
+	]:
+		raise Exception(
+			"py-cpuinfo currently only works on X86 and some ARM/LoongArch/MIPS/PPC/RISCV/SPARC/S390X CPUs; "
+			f"we detected {arch!r}, {bits} bits."
+		)
 
 
 def _utf_to_str(input):
