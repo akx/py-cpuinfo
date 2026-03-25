@@ -27,6 +27,7 @@ jobs:
       env:
         CPUINFO_REQUIRE_BITS: '64'
   test-x86:
+    needs: [test]
     name: Python Tests (x86)
     strategy:
       matrix:
@@ -44,6 +45,7 @@ jobs:
       env:
         CPUINFO_REQUIRE_BITS: '32'
   test-qemu:
+    needs: [test]
     name: Smoke test (${{ matrix.platform }})
     strategy:
       fail-fast: false
@@ -63,6 +65,7 @@ jobs:
         python:3.13-slim
         sh -c "pip install --quiet -e . pytest && python -m pytest tests/test_actual.py tests/test_cli.py -v && cpuinfo"
   test-pyinstaller:
+    needs: [test]
     name: PyInstaller test
     strategy:
       matrix:
