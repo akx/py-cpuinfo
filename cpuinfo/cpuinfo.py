@@ -346,26 +346,6 @@ def _check_arch():
 		raise Exception("py-cpuinfo currently only works on X86 "
 		                "and some ARM/LoongArch/MIPS/PPC/RISCV/SPARC/S390X CPUs.")
 
-def _obj_to_b64(thing):
-	import pickle
-	import base64
-
-	a = thing
-	b = pickle.dumps(a)
-	c = base64.b64encode(b)
-	d = c.decode('utf8')
-	return d
-
-def _b64_to_obj(thing):
-	import pickle
-	import base64
-
-	try:
-		a = base64.b64decode(thing)
-		b = pickle.loads(a)
-		return b
-	except Exception:
-		return {}
 
 def _utf_to_str(input):
 	if isinstance(input, list):
@@ -1519,11 +1499,13 @@ def _get_cpu_info_from_cpuid_actual():
 	trace = Trace(True, True)
 	info = {}
 
-	# Pipe stdout and stderr to strings
-	sys.stdout = trace._stdout
-	sys.stderr = trace._stderr
+	original_stdout = sys.stdout
+	original_stderr = sys.stderr
 
 	try:
+		# Pipe stdout and stderr to strings
+		sys.stdout = trace._stdout
+		sys.stderr = trace._stderr
 		# Get the CPU arch and bits
 		arch, bits = _parse_arch(DataSource.arch_string_raw)
 
@@ -1579,19 +1561,11 @@ def _get_cpu_info_from_cpuid_actual():
 		err_string = format_exc()
 		trace._err = ''.join(['\t\t{0}\n'.format(n) for n in err_string.split('\n')]) + '\n'
 		return trace.to_dict(info, True)
+	finally:
+		sys.stdout = original_stdout
+		sys.stderr = original_stderr
 
 	return trace.to_dict(info, False)
-
-def _get_cpu_info_from_cpuid_subprocess_wrapper(queue):
-	orig_stdout = sys.stdout
-	orig_stderr = sys.stderr
-
-	output = _get_cpu_info_from_cpuid_actual()
-
-	sys.stdout = orig_stdout
-	sys.stderr = orig_stderr
-
-	queue.put(_obj_to_b64(output))
 
 def _get_cpu_info_from_cpuid():
 	'''
@@ -1601,8 +1575,6 @@ def _get_cpu_info_from_cpuid():
 	'''
 
 	g_trace.header('Tying to get info from CPUID ...')
-
-	from multiprocessing import Process, Queue
 
 	# Return {} if can't cpuid
 	if not DataSource.can_cpuid:
@@ -1619,64 +1591,42 @@ def _get_cpu_info_from_cpuid():
 
 	try:
 		if CAN_CALL_CPUID_IN_SUBPROCESS:
-			# Start running the function in a subprocess
-			queue = Queue()
-			p = Process(target=_get_cpu_info_from_cpuid_subprocess_wrapper, args=(queue,))
-			p.start()
+			# Run CPUID in a subprocess to isolate potential segfaults
+			import json
+			from subprocess import check_output, DEVNULL, CalledProcessError
 
-			# Wait for the process to end, while it is still alive
-			while p.is_alive():
-				p.join(0)
-
-			# Return {} if it failed
-			if p.exitcode != 0:
+			command = [sys.executable, __file__, '--internal-cpuid']
+			try:
+				stdout = check_output(command, stdin=DEVNULL, stderr=DEVNULL)
+			except CalledProcessError:
 				g_trace.fail('Failed to run CPUID in process. Skipping ...')
 				return {}
 
-			# Return {} if no results
-			if queue.empty():
-				g_trace.fail('Failed to get anything from CPUID process. Skipping ...')
+			output = json.loads(stdout)
+
+			if 'output' in output and output['output']:
+				g_trace.write(output['output'])
+
+			if 'is_fail' not in output:
+				g_trace.fail('Failed to get is_fail from CPUID process. Skipping ...')
 				return {}
-			# Return the result, only if there is something to read
-			else:
-				output = _b64_to_obj(queue.get())
-				import pprint
-				pp = pprint.PrettyPrinter(indent=4)
-				#pp.pprint(output)
 
-				if 'output' in output and output['output']:
-					g_trace.write(output['output'])
+			if 'err' in output and output['err']:
+				g_trace.fail('Failed to run CPUID in process. Skipping ...')
+				g_trace.write(output['err'])
+				g_trace.write('Failed ...')
+				return {}
 
-				if 'stdout' in output and output['stdout']:
-					sys.stdout.write('{0}\n'.format(output['stdout']))
-					sys.stdout.flush()
+			if 'is_fail' in output and output['is_fail']:
+				g_trace.write('Failed ...')
+				return {}
 
-				if 'stderr' in output and output['stderr']:
-					sys.stderr.write('{0}\n'.format(output['stderr']))
-					sys.stderr.flush()
+			if 'info' not in output or not output['info']:
+				g_trace.fail('Failed to get return info from CPUID process. Skipping ...')
+				return {}
 
-				if 'is_fail' not in output:
-					g_trace.fail('Failed to get is_fail from CPUID process. Skipping ...')
-					return {}
-
-				# Fail if there was an exception
-				if 'err' in output and output['err']:
-					g_trace.fail('Failed to run CPUID in process. Skipping ...')
-					g_trace.write(output['err'])
-					g_trace.write('Failed ...')
-					return {}
-
-				if 'is_fail' in output and output['is_fail']:
-					g_trace.write('Failed ...')
-					return {}
-
-				if 'info' not in output or not output['info']:
-					g_trace.fail('Failed to get return info from CPUID process. Skipping ...')
-					return {}
-
-				return output['info']
+			return output['info']
 		else:
-			# FIXME: This should write the values like in the above call to actual
 			orig_stdout = sys.stdout
 			orig_stderr = sys.stderr
 
@@ -2711,30 +2661,7 @@ def get_cpu_info_json():
 	'''
 
 	import json
-
-	output = None
-
-	# If running under pyinstaller, run normally
-	if getattr(sys, 'frozen', False):
-		info = _get_cpu_info_internal()
-		output = json.dumps(info)
-		output = "{0}".format(output)
-	# if not running under pyinstaller, run in another process.
-	# This is done because multiprocesing has a design flaw that
-	# causes non main programs to run multiple times on Windows.
-	else:
-		from subprocess import Popen, PIPE
-
-		command = [sys.executable, __file__, '--json']
-		p1 = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
-		output = p1.communicate()[0]
-
-		if p1.returncode != 0:
-			return "{}"
-
-		output = output.decode(encoding='UTF-8')
-
-	return output
+	return json.dumps(_get_cpu_info_internal())
 
 def get_cpu_info():
 	'''
@@ -2742,17 +2669,10 @@ def get_cpu_info():
 	Returns the result in a dict
 	'''
 
-	import json
-
-	output = get_cpu_info_json()
-
-	# Convert JSON to Python with non unicode strings
-	output = json.loads(output, object_hook = _utf_to_str)
-
-	return output
+	return _get_cpu_info_internal()
 
 def main():
-	from argparse import ArgumentParser
+	from argparse import ArgumentParser, SUPPRESS
 	import json
 
 	# Parse args
@@ -2760,10 +2680,17 @@ def main():
 	parser.add_argument('--json', action='store_true', help='Return the info in JSON format')
 	parser.add_argument('--version', action='store_true', help='Return the version of py-cpuinfo')
 	parser.add_argument('--trace', action='store_true', help='Traces code paths used to find CPU info to file')
+	parser.add_argument('--internal-cpuid', action='store_true', help=SUPPRESS)
 	args = parser.parse_args()
 
 	global g_trace
 	g_trace = Trace(args.trace, False)
+
+	# Internal: run CPUID in isolation and return JSON result
+	if args.internal_cpuid:
+		output = _get_cpu_info_from_cpuid_actual()
+		print(json.dumps(output))
+		return
 
 	try:
 		_check_arch()
