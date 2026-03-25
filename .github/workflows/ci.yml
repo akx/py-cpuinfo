@@ -22,6 +22,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: 'true'
+    - run: uv run --python=python cpuinfo
     - run: uv run --with=pytest-xdist pytest --cov --dist=worksteal -nlogical
       env:
         CPUINFO_REQUIRE_BITS: '64'
@@ -38,6 +39,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: x86
     - uses: astral-sh/setup-uv@v7.6.0
+    - run: uv run --python=python cpuinfo
     - run: uv run --with=pytest-xdist --python python pytest --cov --dist=worksteal -nlogical
       env:
         CPUINFO_REQUIRE_BITS: '32'
@@ -59,7 +61,7 @@ jobs:
         docker run --rm --platform ${{ matrix.platform }}
         -v ${{ github.workspace }}:/work -w /work
         python:3.13-slim
-        sh -c "pip install --quiet -e . pytest && python -m pytest tests/test_actual.py tests/test_cli.py -v && python -m cpuinfo"
+        sh -c "pip install --quiet -e . pytest && python -m pytest tests/test_actual.py tests/test_cli.py -v && cpuinfo"
   build:
     name: Build distribution
     runs-on: ubuntu-latest
