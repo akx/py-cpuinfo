@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "py-cpuinfo"
+name = "py-cpuinfo2"
 dynamic = ["version"]
 description = "Get CPU info with pure Python"
 readme = "README.md"
@@ -11,6 +11,10 @@ license = "MIT"
 requires-python = ">=3.9"
 authors = [
     { name = "Matthew Brennan Jones", email = "matthew.brennan.jones@gmail.com" },
+    { name = "Aarni Koskela", email = "akx@iki.fi" },
+]
+maintainers = [
+    { name = "Aarni Koskela", email = "akx@iki.fi" },
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -23,7 +27,8 @@ classifiers = [
 cpuinfo = "cpuinfo:main"
 
 [project.urls]
-Homepage = "https://github.com/workhorsy/py-cpuinfo"
+Homepage = "https://github.com/akx/py-cpuinfo2"
+Upstream = "https://github.com/workhorsy/py-cpuinfo"
 
 [tool.hatch.version]
 path = "cpuinfo/__init__.py"
